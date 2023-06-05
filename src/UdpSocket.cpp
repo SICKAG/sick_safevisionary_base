@@ -8,7 +8,7 @@
 
 #include <cstring>
 
-#include "UdpSocket.h"
+#include "sick_safevisionary_base/UdpSocket.h"
 
 namespace visionary 
 {

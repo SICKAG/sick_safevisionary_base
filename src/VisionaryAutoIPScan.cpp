@@ -16,10 +16,10 @@
 #include <chrono>
 
 // TinyXML-2 XML DOM parser
-#include "tinyxml2.h"
+#include "sick_safevisionary_base/tinyxml2.h"
 
-#include "VisionaryAutoIPScan.h"
-#include "UdpSocket.h"
+#include "sick_safevisionary_base/VisionaryAutoIPScan.h"
+#include "sick_safevisionary_base/UdpSocket.h"
 
 namespace visionary 
 {

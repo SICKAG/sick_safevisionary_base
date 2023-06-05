@@ -6,8 +6,8 @@
 ///
 /// \version 0.0.1
 
-#include "ControlSession.h"
-#include "CoLaParameterWriter.h"
+#include "sick_safevisionary_base/ControlSession.h"
+#include "sick_safevisionary_base/CoLaParameterWriter.h"
 
 namespace visionary 
 {

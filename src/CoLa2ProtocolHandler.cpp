@@ -6,8 +6,8 @@
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
-#include "CoLa2ProtocolHandler.h"
-#include "VisionaryEndian.h"
+#include "sick_safevisionary_base/CoLa2ProtocolHandler.h"
+#include "sick_safevisionary_base/VisionaryEndian.h"
 
 namespace visionary 
 {

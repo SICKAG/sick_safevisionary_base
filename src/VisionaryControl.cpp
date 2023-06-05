@@ -7,15 +7,15 @@
 // email: TechSupport0905@sick.de
 
 #include <cassert>
-#include "VisionaryControl.h"
-#include "VisionaryEndian.h"
-#include "CoLaBProtocolHandler.h"
-#include "CoLa2ProtocolHandler.h"
-#include "TcpSocket.h"
-#include "ControlSession.h"
-#include "AuthenticationLegacy.h"
-#include "CoLaParameterWriter.h"
-#include "CoLaParameterReader.h"
+#include "sick_safevisionary_base/VisionaryControl.h"
+#include "sick_safevisionary_base/VisionaryEndian.h"
+#include "sick_safevisionary_base/CoLaBProtocolHandler.h"
+#include "sick_safevisionary_base/CoLa2ProtocolHandler.h"
+#include "sick_safevisionary_base/TcpSocket.h"
+#include "sick_safevisionary_base/ControlSession.h"
+#include "sick_safevisionary_base/AuthenticationLegacy.h"
+#include "sick_safevisionary_base/CoLaParameterWriter.h"
+#include "sick_safevisionary_base/CoLaParameterReader.h"
 
 namespace visionary 
 {

@@ -9,8 +9,8 @@
 #include <cstring>
 #include <stdio.h>
 
-#include "VisionaryDataStream.h"
-#include "VisionaryEndian.h"
+#include "sick_safevisionary_base/VisionaryDataStream.h"
+#include "sick_safevisionary_base/VisionaryEndian.h"
 
 namespace visionary 
 {

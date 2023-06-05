@@ -6,7 +6,7 @@
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
-#include "CRC.h"
+#include "sick_safevisionary_base/CRC.h"
 
 namespace visionary
 {

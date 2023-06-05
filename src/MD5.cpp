@@ -51,7 +51,7 @@
   1999-05-03 lpd Original version.
  */
 
-#include "MD5.h"
+#include "sick_safevisionary_base/MD5.h"
 #include <string.h>
 
 #undef BYTE_ORDER		       /* 1 = big-endian, -1 = little-endian, 

@@ -6,7 +6,7 @@
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
-#include "VisionaryData.h"
+#include "sick_safevisionary_base/VisionaryData.h"
 
 #include <sstream>
 #include <algorithm>

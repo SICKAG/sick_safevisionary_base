@@ -6,4 +6,4 @@
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
-#include "IProtocolHandler.h"
+#include "sick_safevisionary_base/IProtocolHandler.h"

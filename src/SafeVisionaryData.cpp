@@ -8,12 +8,12 @@
 
 #include <cstdio>
 
-#include "CRC.h"
-#include "SafeVisionaryData.h"
-#include "VisionaryEndian.h"
+#include "sick_safevisionary_base/CRC.h"
+#include "sick_safevisionary_base/SafeVisionaryData.h"
+#include "sick_safevisionary_base/VisionaryEndian.h"
 #include <iostream>
 // TinyXML-2 XML DOM parser
-#include "tinyxml2.h"
+#include "sick_safevisionary_base/tinyxml2.h"
 
 namespace visionary
 {

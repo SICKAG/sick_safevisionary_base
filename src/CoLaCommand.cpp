@@ -6,10 +6,10 @@
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
-#include "CoLaCommand.h"
+#include "sick_safevisionary_base/CoLaCommand.h"
 
 #include <string>
-#include "VisionaryEndian.h"
+#include "sick_safevisionary_base/VisionaryEndian.h"
 
 namespace visionary 
 {

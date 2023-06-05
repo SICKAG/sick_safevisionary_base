@@ -6,11 +6,11 @@
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
-#include "PointCloudPlyWriter.h"
+#include "sick_safevisionary_base/PointCloudPlyWriter.h"
+#include "sick_safevisionary_base/VisionaryEndian.h"
 
 #include <iostream>
 #include <fstream>
-#include "VisionaryEndian.h"
 
 namespace visionary 
 {

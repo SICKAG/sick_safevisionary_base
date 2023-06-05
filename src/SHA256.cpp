@@ -8,7 +8,7 @@
  */
 #include <cstring>
 #include <cassert>
-#include "SHA256.h"
+#include "sick_safevisionary_base/SHA256.h"
 
 /**
   @file sha256.c

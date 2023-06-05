@@ -6,7 +6,7 @@
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
-#include "TcpSocket.h"
+#include "sick_safevisionary_base/TcpSocket.h"
 
 namespace visionary 
 {

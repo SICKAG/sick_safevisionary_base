@@ -6,10 +6,10 @@
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
-#include "CoLaParameterWriter.h"
+#include "sick_safevisionary_base/CoLaParameterWriter.h"
 
-#include "MD5.h"
-#include "VisionaryEndian.h"
+#include "sick_safevisionary_base/MD5.h"
+#include "sick_safevisionary_base/VisionaryEndian.h"
 
 namespace visionary 
 {

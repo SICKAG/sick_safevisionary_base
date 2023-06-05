@@ -6,9 +6,9 @@
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
-#include "SafeVisionaryDataStream.h"
-#include "CRC.h"
-#include "VisionaryEndian.h"
+#include "sick_safevisionary_base/SafeVisionaryDataStream.h"
+#include "sick_safevisionary_base/CRC.h"
+#include "sick_safevisionary_base/VisionaryEndian.h"
 #include <cstring>
 #include <iostream>
 #include <stdio.h>

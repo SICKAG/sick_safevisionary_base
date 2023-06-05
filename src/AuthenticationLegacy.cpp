@@ -6,9 +6,9 @@
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
-#include "AuthenticationLegacy.h"
-#include "CoLaParameterWriter.h"
-#include "CoLaParameterReader.h"
+#include "sick_safevisionary_base/AuthenticationLegacy.h"
+#include "sick_safevisionary_base/CoLaParameterWriter.h"
+#include "sick_safevisionary_base/CoLaParameterReader.h"
 
 namespace visionary 
 {
