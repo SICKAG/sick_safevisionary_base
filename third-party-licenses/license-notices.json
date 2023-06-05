@@ -1,0 +1,101 @@
+{
+   "conclusions" : [
+      {
+         "code_type" : null,
+         "copyright" : "Copyright (C) 1999, 2000, 2002 Aladdin Enterprises.  All rights reserved.",
+         "copyrights" : [
+            {
+               "statements" : [
+                  "Copyright (C) 1999, 2000, 2002 Aladdin Enterprises.  All rights reserved."
+               ]
+            }
+         ],
+         "download_url" : null,
+         "feature" : "",
+         "fileId" : 1659,
+         "homepage_url" : null,
+         "is_deployed" : true,
+         "is_modified" : false,
+         "license_expression" : [],
+         "license_url" : "https://scancode-licensedb.aboutcode.org/zlib",
+         "name" : "MD5",
+         "notes" : "",
+         "notice_url" : "",
+         "owner" : "SICK AG",
+         "path" : "sick_visionary_cpp_shared/src/MD5.cpp",
+         "programming_language" : null,
+         "purl" : null,
+         "purpose" : "",
+         "review_status" : "Analyzed",
+         "version" : ""
+      },
+      {
+         "code_type" : null,
+         "copyright" : "Copyright (c) Tom St Denis",
+         "copyrights" : [
+            {
+               "statements" : [
+                  "Copyright (c) Tom St Denis"
+               ]
+            }
+         ],
+         "download_url" : null,
+         "feature" : "",
+         "fileId" : 1670,
+         "homepage_url" : null,
+         "is_deployed" : true,
+         "is_modified" : false,
+         "license_expression" : [
+            {
+               "license_expression" : "public-domain-disclaimer"
+            }
+         ],
+         "license_url" : "https://scancode-licensedb.aboutcode.org/public-domain-disclaimer",
+         "name" : "LibTomCrypt",
+         "notes" : "",
+         "notice_url" : null,
+         "owner" : "SICK AG",
+         "path" : "sick_visionary_cpp_shared/src/SHA256.cpp",
+         "programming_language" : null,
+         "purl" : null,
+         "purpose" : "",
+         "review_status" : "Analyzed",
+         "version" : ""
+      },
+      {
+         "code_type" : null,
+         "copyright" : "Copyright (c) Lee Thomason (www.grinninglizard.com) and Contributors",
+         "copyrights" : [
+            {
+               "statements" : [
+                  "Copyright (c) Lee Thomason (www.grinninglizard.com) and Contributors"
+               ]
+            }
+         ],
+         "download_url" : null,
+         "feature" : "",
+         "fileId" : 144,
+         "homepage_url" : null,
+         "is_deployed" : null,
+         "is_modified" : null,
+         "license_expression" : [
+            {
+               "license_expression" : "zlib"
+            }
+         ],
+         "license_url" : "https://github.com/leethomason/tinyxml2/blob/1dee28e51f9175a31955b9791c74c430fe13dc82/LICENSE.txt",
+         "name" : "TinyXML2",
+         "notes" : "",
+         "notice_url" : "",
+         "owner" : null,
+         "path" : "sick_visionary_cpp_shared/src/tinyxml2.cpp, sick_visionary_cpp_shared/src/tinyxml2.h",
+         "programming_language" : null,
+         "purl" : null,
+         "purpose" : "",
+         "review_status" : null,
+         "version" : "9.0.0"
+      }
+   ],
+   "workbench_notice" : "Exported from ScanCode Workbench and provided on an \"AS IS\" BASIS, WITHOUT WARRANTIES\\nOR CONDITIONS OF ANY KIND, either express or implied. No content created from\\nScanCode Workbench should be considered or used as legal advice. Consult an Attorney\\nfor any legal advice.\\nScanCode Workbench is a free software analysis application from nexB Inc. and others.\\nVisit https://github.com/nexB/scancode-workbench/ for support and download.\"",
+   "workbench_version" : "3.1.1"
+}
