@@ -1,8 +1,8 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: November 2019
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
@@ -12,17 +12,14 @@
 #include "sick_safevisionary_base/VisionaryDataStream.h"
 #include "sick_safevisionary_base/VisionaryEndian.h"
 
-namespace visionary 
-{
+namespace visionary {
 
-VisionaryDataStream::VisionaryDataStream(std::shared_ptr<VisionaryData> dataHandler) :
-  m_dataHandler(dataHandler)
+VisionaryDataStream::VisionaryDataStream(std::shared_ptr<VisionaryData> dataHandler)
+  : m_dataHandler(dataHandler)
 {
 }
 
-VisionaryDataStream::~VisionaryDataStream()
-{
-}
+VisionaryDataStream::~VisionaryDataStream() {}
 
 bool VisionaryDataStream::open(const std::string& hostname, std::uint16_t port)
 {
@@ -88,7 +85,7 @@ bool VisionaryDataStream::getNextFrame()
     std::printf("Received less than the required 4 package length bytes.\n");
     return false;
   }
-  
+
   const uint32_t packageLength = readUnalignBigEndian<uint32_t>(buffer.data());
 
   // Receive the frame data
@@ -97,7 +94,7 @@ bool VisionaryDataStream::getNextFrame()
 
   // Check that protocol version and packet type are correct
   const uint16_t protocolVersion = readUnalignBigEndian<uint16_t>(buffer.data());
-  const uint8_t packetType = readUnalignBigEndian<uint8_t>(buffer.data() + 2);
+  const uint8_t packetType       = readUnalignBigEndian<uint8_t>(buffer.data() + 2);
   if (protocolVersion != 0x001)
   {
     std::printf("Received unknown protocol version %d.\n", protocolVersion);
@@ -114,17 +111,17 @@ bool VisionaryDataStream::getNextFrame()
 
 bool VisionaryDataStream::parseSegmentBinaryData(std::vector<uint8_t>::iterator itBuf)
 {
-  bool result = false;
+  bool result                                 = false;
   std::vector<uint8_t>::iterator itBufSegment = itBuf;
 
   //-----------------------------------------------
   // Extract informations in Segment-Binary-Data
-  //const uint16_t blobID = readUnalignBigEndian<uint16_t>(&*itBufSegment);
+  // const uint16_t blobID = readUnalignBigEndian<uint16_t>(&*itBufSegment);
   itBufSegment += sizeof(uint16_t);
   const uint16_t numSegments = readUnalignBigEndian<uint16_t>(&*itBufSegment);
   itBufSegment += sizeof(uint16_t);
 
-  //offset and changedCounter, 4 bytes each per segment
+  // offset and changedCounter, 4 bytes each per segment
   std::vector<uint32_t> offset(numSegments);
   std::vector<uint32_t> changeCounter(numSegments);
   for (int i = 0; i < numSegments; i++)
@@ -148,4 +145,4 @@ bool VisionaryDataStream::parseSegmentBinaryData(std::vector<uint8_t>::iterator 
   return result;
 }
 
-}
+} // namespace visionary

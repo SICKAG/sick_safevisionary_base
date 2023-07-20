@@ -1,21 +1,20 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: October 2018
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
 #pragma once
 
+#include "CoLaCommandType.h"
+#include "CoLaError.h"
 #include <cstdint>
 #include <string>
 #include <vector>
-#include "CoLaError.h"
-#include "CoLaCommandType.h"
 
-namespace visionary 
-{
+namespace visionary {
 
 class CoLaCommand
 {
@@ -26,7 +25,8 @@ private:
   size_t m_parameterOffset;
   CoLaError::Enum m_error;
 
-  /// <summary>Construct a new <see cref="CoLaCommand" /> with the given command type, error, and name, but without any data.</summary>
+  /// <summary>Construct a new <see cref="CoLaCommand" /> with the given command type, error, and
+  /// name, but without any data.</summary>
   CoLaCommand(CoLaCommandType::Enum commandType, CoLaError::Enum error, const char* name);
 
 public:
@@ -53,4 +53,4 @@ public:
   static CoLaCommand networkErrorCommand();
 };
 
-}
+} // namespace visionary

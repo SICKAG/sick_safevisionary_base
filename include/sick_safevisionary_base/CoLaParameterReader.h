@@ -1,19 +1,18 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: October 2018
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
 #pragma once
 
+#include "CoLaCommand.h"
 #include <cstdint>
 #include <string>
-#include "CoLaCommand.h"
 
-namespace visionary 
-{
+namespace visionary {
 
 /// <summary>
 /// Class for reading data from a <see cref="CoLaCommand" />.
@@ -84,4 +83,4 @@ public:
   std::string readFlexString();
 };
 
-}
+} // namespace visionary

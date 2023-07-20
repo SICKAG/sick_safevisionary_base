@@ -1,16 +1,15 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: November 2019
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
 #include "sick_safevisionary_base/CoLa2ProtocolHandler.h"
 #include "sick_safevisionary_base/VisionaryEndian.h"
 
-namespace visionary 
-{
+namespace visionary {
 
 CoLa2ProtocolHandler::CoLa2ProtocolHandler(ITransport& rTransport)
   : m_rTransport(rTransport)
@@ -19,9 +18,7 @@ CoLa2ProtocolHandler::CoLa2ProtocolHandler(ITransport& rTransport)
 {
 }
 
-CoLa2ProtocolHandler::~CoLa2ProtocolHandler()
-{
-}
+CoLa2ProtocolHandler::~CoLa2ProtocolHandler() {}
 
 bool CoLa2ProtocolHandler::openSession(uint8_t sessionTimeout /*secs*/)
 {
@@ -29,17 +26,18 @@ bool CoLa2ProtocolHandler::openSession(uint8_t sessionTimeout /*secs*/)
   std::vector<std::uint8_t> buffer = createCoLa2Header();
   buffer.push_back('O'); // Open Session
   buffer.push_back('x');
-  buffer.push_back(sessionTimeout);  // sessionTimeout secs timeout
+  buffer.push_back(sessionTimeout); // sessionTimeout secs timeout
 
   // set length of client ID (flex string)
-  buffer.insert(buffer.end(), { 0, 0 });
+  buffer.insert(buffer.end(), {0, 0});
   *reinterpret_cast<uint16_t*>(&buffer[19]) = nativeToColaByteOrder<uint16_t>(2u);
 
   // set client ID
   buffer.insert(buffer.end(), {'E', 'x'}); // Example flexstring, max 32 bytes
 
   // Overwrite length
-  *reinterpret_cast<uint32_t*>(&buffer[4]) = nativeToBigEndian(static_cast<uint32_t>(buffer.size()) - 8);
+  *reinterpret_cast<uint32_t*>(&buffer[4]) =
+    nativeToBigEndian(static_cast<uint32_t>(buffer.size()) - 8);
 
   //
   // send to socket
@@ -54,7 +52,7 @@ bool CoLa2ProtocolHandler::openSession(uint8_t sessionTimeout /*secs*/)
 
   m_rTransport.read(buffer, sizeof(uint32_t));
   // check for magic bytes
-  const std::vector<uint8_t> MagicBytes = { 0x02, 0x02, 0x02, 0x02 };
+  const std::vector<uint8_t> MagicBytes = {0x02, 0x02, 0x02, 0x02};
   bool result = std::equal(MagicBytes.begin(), MagicBytes.end(), buffer.begin());
   if (result)
   {
@@ -102,13 +100,13 @@ std::vector<std::uint8_t> CoLa2ProtocolHandler::createCoLa2Header()
   header.push_back(0); // TBD
 
   // add SockIdx0
-  //header.insert(header.end(), { 0, 0, 0, 1 }); // TBD
+  // header.insert(header.end(), { 0, 0, 0, 1 }); // TBD
 
   // add SessionID
-  header.insert(header.end(), { 0, 0, 0, 0 });
+  header.insert(header.end(), {0, 0, 0, 0});
   *reinterpret_cast<uint32_t*>(&header[10]) = nativeToBigEndian(static_cast<uint32_t>(m_sessionID));
   // add ReqID
-  header.insert(header.end(), { 0, 0 });
+  header.insert(header.end(), {0, 0});
   *reinterpret_cast<uint16_t*>(&header[14]) = nativeToBigEndian(static_cast<uint16_t>(getReqId()));
 
   return header;
@@ -130,25 +128,26 @@ CoLaCommand CoLa2ProtocolHandler::send(CoLaCommand cmd)
   header.clear();
 
   // Overwrite length
-  *reinterpret_cast<uint32_t*>(&buffer[4]) = nativeToBigEndian(static_cast<uint32_t>(buffer.size()) - 8);
+  *reinterpret_cast<uint32_t*>(&buffer[4]) =
+    nativeToBigEndian(static_cast<uint32_t>(buffer.size()) - 8);
 
   // Add checksum to end
-  //buffer.insert(buffer.end(), calculateChecksum(buffer));
+  // buffer.insert(buffer.end(), calculateChecksum(buffer));
 
   //
   // send to socket
   //
-  
+
   m_rTransport.send(buffer);
   buffer.clear();
 
   //
   // get response
   //
-  
+
   m_rTransport.read(buffer, sizeof(uint32_t));
   // check for magic bytes
-  const std::vector<uint8_t> MagicBytes = { 0x02, 0x02, 0x02, 0x02 };
+  const std::vector<uint8_t> MagicBytes = {0x02, 0x02, 0x02, 0x02};
   bool result = std::equal(MagicBytes.begin(), MagicBytes.end(), buffer.begin());
   if (result)
   {
@@ -163,7 +162,7 @@ CoLaCommand CoLa2ProtocolHandler::send(CoLaCommand cmd)
     buffer.clear();
   }
   buffer.erase(buffer.begin(), buffer.begin() + 8); // drop header
-  buffer.insert(buffer.begin(), 's'); // insert 's'
+  buffer.insert(buffer.begin(), 's');               // insert 's'
   CoLaCommand response(buffer);
   return response;
 }
@@ -178,4 +177,4 @@ uint8_t CoLa2ProtocolHandler::calculateChecksum(const std::vector<uint8_t>& buff
   return checksum;
 }
 
-}
+} // namespace visionary

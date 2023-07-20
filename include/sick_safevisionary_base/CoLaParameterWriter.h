@@ -1,21 +1,20 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: October 2018
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
 #pragma once
 
-#include <vector>
 #include <cstdint>
+#include <vector>
 
-#include "CoLaCommandType.h"
 #include "CoLaCommand.h"
+#include "CoLaCommandType.h"
 
-namespace visionary 
-{
+namespace visionary {
 
 /// <summary>
 /// Builder for constructing <see cref="CoLaCommand" />s.
@@ -32,9 +31,10 @@ public:
   /// Construct a new <see cref="CoLaParameterWriter" />.
   /// </summary>
   /// <param name="type">Type of command.</param>
-  /// <param name="command">The command, e.g. for methods this should be the "communication name" from the CID.</param>
+  /// <param name="command">The command, e.g. for methods this should be the "communication name"
+  /// from the CID.</param>
   CoLaParameterWriter(CoLaCommandType::Enum type, const char* name);
-  
+
   ~CoLaParameterWriter();
 
   /// <summary>
@@ -194,7 +194,7 @@ private:
   /// </summary>
   /// <param name="buffer">Buffer to calculate checksum for.</param>
   /// <returns>The calculated checksum.</returns>
-  //static uint8_t calculateChecksum(const std::vector<uint8_t>& buffer);
+  // static uint8_t calculateChecksum(const std::vector<uint8_t>& buffer);
 };
 
-}
+} // namespace visionary

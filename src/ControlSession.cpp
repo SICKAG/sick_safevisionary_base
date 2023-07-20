@@ -9,17 +9,14 @@
 #include "sick_safevisionary_base/ControlSession.h"
 #include "sick_safevisionary_base/CoLaParameterWriter.h"
 
-namespace visionary 
-{
+namespace visionary {
 
 ControlSession::ControlSession(IProtocolHandler& ProtocolHandler)
   : m_ProtocolHandler(ProtocolHandler)
 {
 }
 
-ControlSession::~ControlSession()
-{
-}
+ControlSession::~ControlSession() {}
 
 CoLaCommand ControlSession::prepareRead(const std::string& varname)
 {
@@ -35,7 +32,8 @@ CoLaCommand ControlSession::prepareWrite(const std::string& varname)
 
 CoLaCommand ControlSession::prepareCall(const std::string& varname)
 {
-  CoLaCommand cmd = CoLaParameterWriter(CoLaCommandType::METHOD_INVOCATION, varname.c_str()).build();
+  CoLaCommand cmd =
+    CoLaParameterWriter(CoLaCommandType::METHOD_INVOCATION, varname.c_str()).build();
   return cmd;
 }
 
@@ -48,4 +46,4 @@ CoLaCommand ControlSession::send(const CoLaCommand& cmd)
   return m_ProtocolHandler.send(cmd);
 }
 
-}
+} // namespace visionary

@@ -15,8 +15,7 @@
 
 //#define ENABLE_CRC_CHECK_UDP_FRAGMENT
 
-namespace
-{
+namespace {
 /// Maximum size of the BLOBs
 /// todo
 constexpr size_t BLOB_SIZE_MAX = 3000u * 1024u;
@@ -50,28 +49,33 @@ constexpr int32_t BLOB_HEADER_SIZE = 11; // 4+4+2+1 = 11
 /// All values are big-endian.
 struct UdpDataHeader
 {
-  uint16_t packetNumber;     ///< packet number: current Blob number, incremented by one for each complete Blob
-  uint16_t fragmentNumber;   ///< current fragment number, incremented by one for new each fragment, set to 0 in case of a new Blob
-  uint32_t timeStamp;        ///< Time in us when the UDP datagram is generated, increasing monotonically starting from system initialization.
+  uint16_t
+    packetNumber; ///< packet number: current Blob number, incremented by one for each complete Blob
+  uint16_t fragmentNumber; ///< current fragment number, incremented by one for new each fragment,
+                           ///< set to 0 in case of a new Blob
+  uint32_t timeStamp; ///< Time in us when the UDP datagram is generated, increasing monotonically
+                      ///< starting from system initialization.
   uint32_t sourceIpAddress;  ///< IP address of the sensor
   uint16_t sourcePortNumber; ///< UDP port number of the sensor
   uint32_t destIpAddress;    ///< IP address of the target
   uint16_t destPortNumber;   ///< UDP port number of the target
   uint16_t protocolVersion;  ///< protocol version of the UDP header
-  uint16_t dataLength; ///< length of the data within the UDP packet: bytes after protocol version (including Packet Type) until end of fragment (including
-                       ///< pseudo checksum)
-  uint8_t flags;       ///< flags of the fragment: Bit0-Bit6 reserved, Bit7 FIN: Set when this fragment is the last one of the Blob
-  uint8_t packetType;  //< type of the packed, set to 'b' = 0x62: Data packet
+  uint16_t
+    dataLength; ///< length of the data within the UDP packet: bytes after protocol version
+                ///< (including Packet Type) until end of fragment (including pseudo checksum)
+  uint8_t flags; ///< flags of the fragment: Bit0-Bit6 reserved, Bit7 FIN: Set when this fragment is
+                 ///< the last one of the Blob
+  uint8_t packetType; //< type of the packed, set to 'b' = 0x62: Data packet
 };
 
 /// Structure of Blob header.
 /// All values are big-endian.
 struct BlobDataHeader
 {
-  uint32_t blobStart;        ///< 4 STx bytes, marks the start of Blob data, set to 0x02 0x02 0x02 0x02
-  uint32_t blobLength;       ///< length of the Blob data
+  uint32_t blobStart;  ///< 4 STx bytes, marks the start of Blob data, set to 0x02 0x02 0x02 0x02
+  uint32_t blobLength; ///< length of the Blob data
   uint16_t protocolVersion;  ///< protocol version of the Blob data
-  uint8_t  packetType;       ///< type of the packet, set to 'b' = 0x62: Data packet
+  uint8_t packetType;        ///< type of the packet, set to 'b' = 0x62: Data packet
   uint16_t blobId;           ///< ID of the Blob data, set to 1 (3D data)
   uint16_t numberOfSegments; ///< number of data segments within the Blob data
 };
@@ -97,17 +101,18 @@ constexpr uint8_t BLOB_DATA_BLOB_ID = 0x0001u;
 
 } // namespace
 
-namespace visionary
-{
+namespace visionary {
 SafeVisionaryDataStream::SafeVisionaryDataStream(std::shared_ptr<VisionaryData> dataHandler)
-  : m_dataHandler(dataHandler), m_blobNumber(0u), m_numSegments(0u), m_lastDataStreamError(DataStreamError::OK)
+  : m_dataHandler(dataHandler)
+  , m_blobNumber(0u)
+  , m_numSegments(0u)
+  , m_lastDataStreamError(DataStreamError::OK)
 {
-  m_blobDataBuffer.reserve(BLOB_SIZE_MAX); // reserve maximum BLOB size to avoid (slow) reallocations
+  m_blobDataBuffer.reserve(
+    BLOB_SIZE_MAX); // reserve maximum BLOB size to avoid (slow) reallocations
 }
 
-SafeVisionaryDataStream::~SafeVisionaryDataStream()
-{
-}
+SafeVisionaryDataStream::~SafeVisionaryDataStream() {}
 
 bool SafeVisionaryDataStream::openUdpConnection(std::uint16_t port)
 {
@@ -210,7 +215,8 @@ int32_t SafeVisionaryDataStream::getNextTcpReception(std::vector<std::uint8_t>& 
   return receiveSize;
 }
 
-bool SafeVisionaryDataStream::parseUdpHeader(std::vector<std::uint8_t>& buffer, UdpProtocolData& udpProtocolData)
+bool SafeVisionaryDataStream::parseUdpHeader(std::vector<std::uint8_t>& buffer,
+                                             UdpProtocolData& udpProtocolData)
 {
   udpProtocolData = {0u, 0u, 0u, false};
 
@@ -227,10 +233,12 @@ bool SafeVisionaryDataStream::parseUdpHeader(std::vector<std::uint8_t>& buffer, 
   }
 
 #ifdef ENABLE_CRC_CHECK_UDP_FRAGMENT
-  const uint32_t udpDataSize = static_cast<uint16_t>(buffer.size()) - static_cast<uint16_t>(sizeof(uint32_t));
-  const uint32_t crc32       = readUnalignBigEndian<uint32_t>(buffer.data() + udpDataSize);
+  const uint32_t udpDataSize =
+    static_cast<uint16_t>(buffer.size()) - static_cast<uint16_t>(sizeof(uint32_t));
+  const uint32_t crc32 = readUnalignBigEndian<uint32_t>(buffer.data() + udpDataSize);
 
-  const uint32_t crc32Calculated = ~CRC_calcCrc32CBlock(buffer.data(), udpDataSize, CRC_DEFAULT_INIT_VALUE32);
+  const uint32_t crc32Calculated =
+    ~CRC_calcCrc32CBlock(buffer.data(), udpDataSize, CRC_DEFAULT_INIT_VALUE32);
 
   if (crc32 != crc32Calculated)
   {
@@ -251,11 +259,15 @@ bool SafeVisionaryDataStream::parseUdpHeader(std::vector<std::uint8_t>& buffer, 
   // check length of received packet
   const uint16_t fragmentLength = readUnalignBigEndian<uint16_t>(&pUdpHeader->dataLength);
   // received length =length of received datagram - size of UDP header - size of CRC value
-  const uint16_t receivedLength = static_cast<uint16_t>(buffer.size()) - static_cast<uint16_t>(sizeof(UdpDataHeader)) - static_cast<uint16_t>(sizeof(uint32_t));
+  const uint16_t receivedLength = static_cast<uint16_t>(buffer.size()) -
+                                  static_cast<uint16_t>(sizeof(UdpDataHeader)) -
+                                  static_cast<uint16_t>(sizeof(uint32_t));
   if (fragmentLength != receivedLength)
   {
     // packet truncated, invalid
-    std::printf("Received unexpected packet length. Expected length: %d, Received length: %d\n.", fragmentLength, receivedLength);
+    std::printf("Received unexpected packet length. Expected length: %d, Received length: %d\n.",
+                fragmentLength,
+                receivedLength);
     m_lastDataStreamError = DataStreamError::INVALID_LENGTH_UDP_HEADER;
     return false;
   }
@@ -273,7 +285,7 @@ bool SafeVisionaryDataStream::parseUdpHeader(std::vector<std::uint8_t>& buffer, 
 bool SafeVisionaryDataStream::getBlobStartUdp(bool& lastFragment)
 {
   std::vector<uint8_t> receiveBuffer;
-  bool                 foundBlobStart{false};
+  bool foundBlobStart{false};
   lastFragment = false;
 
   while (!foundBlobStart)
@@ -298,7 +310,8 @@ bool SafeVisionaryDataStream::getBlobStartUdp(bool& lastFragment)
     {
       // copy payload of first fragment into buffer
       m_blobDataBuffer.resize(udpProtocolData.dataLength);
-      memcpy(m_blobDataBuffer.data(), &receiveBuffer[sizeof(UdpDataHeader)], udpProtocolData.dataLength);
+      memcpy(
+        m_blobDataBuffer.data(), &receiveBuffer[sizeof(UdpDataHeader)], udpProtocolData.dataLength);
       m_blobNumber = udpProtocolData.blobNumber;
       if (udpProtocolData.isLastFragment)
       {
@@ -318,7 +331,7 @@ bool SafeVisionaryDataStream::getBlobStartUdp(bool& lastFragment)
 bool SafeVisionaryDataStream::getBlobStartTcp(std::vector<std::uint8_t>& receiveBufferPacketSize)
 {
   int32_t receiveSize = 0;
-  int     blobCounter = 0;
+  int blobCounter     = 0;
 
   while (true)
   {
@@ -333,7 +346,8 @@ bool SafeVisionaryDataStream::getBlobStartTcp(std::vector<std::uint8_t>& receive
     if (receiveSize == BLOB_HEADER_SIZE && blobCounter == 2)
     {
       // we have the header of second Blob -> check Blob protocol header
-      BlobDataHeader* pBlobHeader = reinterpret_cast<BlobDataHeader*>(receiveBufferPacketSize.data());
+      BlobDataHeader* pBlobHeader =
+        reinterpret_cast<BlobDataHeader*>(receiveBufferPacketSize.data());
       // check Blob data start bytes
       const uint32_t blobDataStartBytes = readUnalignBigEndian<uint32_t>(&pBlobHeader->blobStart);
       if (blobDataStartBytes == BLOB_DATA_START)
@@ -417,7 +431,8 @@ bool SafeVisionaryDataStream::parseBlobHeaderTcp()
       blobDataPos += sizeof(uint32_t);
     }
 
-    // add additional offset to be able to calculate the length of the last data segment by calculating the difference of the last two offsets
+    // add additional offset to be able to calculate the length of the last data segment by
+    // calculating the difference of the last two offsets
     //@todo Why -3 Bytes? Is BlobLenght correct?
     m_offsetSegment.push_back(readUnalignBigEndian<uint32_t>(&pBlobHeader->blobLength) - 3u);
   }
@@ -474,7 +489,7 @@ bool SafeVisionaryDataStream::parseBlobHeaderUdp()
   {
     // get number of Blob data segments
     m_numSegments = readUnalignBigEndian<uint16_t>(&pBlobHeader->numberOfSegments);
-    //std::cout << '\n' << "Receiving segments: " << m_numSegments << "	 ";
+    // std::cout << '\n' << "Receiving segments: " << m_numSegments << "	 ";
 
     m_offsetSegment.clear();
     m_changeCounter.clear();
@@ -491,7 +506,8 @@ bool SafeVisionaryDataStream::parseBlobHeaderUdp()
       blobDataPos += sizeof(uint32_t);
     }
 
-    // add additional offset to be able to calculate the length of the last data segment by calculating the difference of the last two offsets
+    // add additional offset to be able to calculate the length of the last data segment by
+    // calculating the difference of the last two offsets
     //@todo Why -3 Bytes? Is BlobLenght correct?
     m_offsetSegment.push_back(readUnalignBigEndian<uint32_t>(&pBlobHeader->blobLength) - 3u);
   }
@@ -501,11 +517,11 @@ bool SafeVisionaryDataStream::parseBlobHeaderUdp()
 
 bool SafeVisionaryDataStream::parseBlobData()
 {
-  uint32_t        currentSegment{0};
+  uint32_t currentSegment{0};
 
   // First segment always contains the XML Metadata
   // Blob data begins after packet type, so subtract length of blobId and numberOfSegments
-  uint32_t    beginOfBlobData = sizeof(BlobDataHeader) - 2 * sizeof(uint16_t);
+  uint32_t beginOfBlobData = sizeof(BlobDataHeader) - 2 * sizeof(uint16_t);
   std::string xmlSegment(&m_blobDataBuffer[beginOfBlobData + m_offsetSegment[currentSegment]],
                          &m_blobDataBuffer[beginOfBlobData + m_offsetSegment[currentSegment + 1]]);
 
@@ -516,8 +532,10 @@ bool SafeVisionaryDataStream::parseBlobData()
     {
       currentSegment++;
       // next segment contains the image data
-      size_t binarySegmentSize              = m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
-      auto   beginOfDataSegmentDepthMapIter = m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
+      size_t binarySegmentSize =
+        m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
+      auto beginOfDataSegmentDepthMapIter =
+        m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
       if (!m_dataHandler->parseBinaryData(beginOfDataSegmentDepthMapIter, binarySegmentSize))
       {
         m_lastDataStreamError = DataStreamError::DATA_SEGMENT_DEPTHMAP_ERROR;
@@ -529,10 +547,13 @@ bool SafeVisionaryDataStream::parseBlobData()
     {
       currentSegment++;
       // next segment contains the device status
-      size_t segmentSizeDeviceStatus            = m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
-      auto   beginOfDataSegmentDeviceStatusIter = m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
+      size_t segmentSizeDeviceStatus =
+        m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
+      auto beginOfDataSegmentDeviceStatusIter =
+        m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
 
-      if (!m_dataHandler->parseDeviceStatusData(beginOfDataSegmentDeviceStatusIter, segmentSizeDeviceStatus))
+      if (!m_dataHandler->parseDeviceStatusData(beginOfDataSegmentDeviceStatusIter,
+                                                segmentSizeDeviceStatus))
       {
         m_lastDataStreamError = DataStreamError::DATA_SEGMENT_DEVICESTATUS_ERROR;
         return false;
@@ -543,8 +564,9 @@ bool SafeVisionaryDataStream::parseBlobData()
     {
       currentSegment++;
       // next segment contains the ROI data
-      size_t segmentSizeROI            = m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
-      auto   beginOfDataSegmentRoiIter = m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
+      size_t segmentSizeROI = m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
+      auto beginOfDataSegmentRoiIter =
+        m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
       if (!m_dataHandler->parseRoiData(beginOfDataSegmentRoiIter, segmentSizeROI))
       {
         m_lastDataStreamError = DataStreamError::DATA_SEGMENT_ROI_ERROR;
@@ -556,8 +578,10 @@ bool SafeVisionaryDataStream::parseBlobData()
     {
       currentSegment++;
       // next segment contains the Local I/Os
-      size_t segmentSizeLocalIOs            = m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
-      auto   beginOfDataSegmentLocalIOsIter = m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
+      size_t segmentSizeLocalIOs =
+        m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
+      auto beginOfDataSegmentLocalIOsIter =
+        m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
       if (!m_dataHandler->parseLocalIOsData(beginOfDataSegmentLocalIOsIter, segmentSizeLocalIOs))
       {
         m_lastDataStreamError = DataStreamError::DATA_SEGMENT_LOCALIOS_ERROR;
@@ -568,10 +592,13 @@ bool SafeVisionaryDataStream::parseBlobData()
     {
       currentSegment++;
       // next segment contains the Field Information
-      size_t segmentSizeFieldInformation            = m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
-      auto   beginOfDataSegmentFieldInformationIter = m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
+      size_t segmentSizeFieldInformation =
+        m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
+      auto beginOfDataSegmentFieldInformationIter =
+        m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
 
-      if (!m_dataHandler->parseFieldInformationData(beginOfDataSegmentFieldInformationIter, segmentSizeFieldInformation))
+      if (!m_dataHandler->parseFieldInformationData(beginOfDataSegmentFieldInformationIter,
+                                                    segmentSizeFieldInformation))
       {
         m_lastDataStreamError = DataStreamError::DATA_SEGMENT_FIELDINFORMATION_ERROR;
         return false;
@@ -581,9 +608,12 @@ bool SafeVisionaryDataStream::parseBlobData()
     {
       currentSegment++;
       // next segment contains the logic signals
-      size_t segmentSizeLogicSignals            = m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
-      auto   beginOfDataSegmentLogicSignalsIter = m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
-      if (!m_dataHandler->parseLogicSignalsData(beginOfDataSegmentLogicSignalsIter, segmentSizeLogicSignals))
+      size_t segmentSizeLogicSignals =
+        m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
+      auto beginOfDataSegmentLogicSignalsIter =
+        m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
+      if (!m_dataHandler->parseLogicSignalsData(beginOfDataSegmentLogicSignalsIter,
+                                                segmentSizeLogicSignals))
       {
         m_lastDataStreamError = DataStreamError::DATA_SEGMENT_LOGICSIGNALS_ERROR;
         return false;
@@ -593,8 +623,9 @@ bool SafeVisionaryDataStream::parseBlobData()
     {
       currentSegment++;
       // next segment contains the IMU
-      size_t segmentSizeIMU            = m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
-      auto   beginOfDataSegmentIMUIter = m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
+      size_t segmentSizeIMU = m_offsetSegment[currentSegment + 1] - m_offsetSegment[currentSegment];
+      auto beginOfDataSegmentIMUIter =
+        m_blobDataBuffer.begin() + beginOfBlobData + m_offsetSegment[currentSegment];
       if (!m_dataHandler->parseIMUData(beginOfDataSegmentIMUIter, segmentSizeIMU))
       {
         m_lastDataStreamError = DataStreamError::DATA_SEGMENT_IMU_ERROR;
@@ -607,8 +638,8 @@ bool SafeVisionaryDataStream::parseBlobData()
     m_lastDataStreamError = DataStreamError::PARSE_XML_ERROR;
     return false;
   }
-  // in case data segment "Depthmap" is not available use the changed counter of segment 1 as frame number
-  // the changed counter is incremented each Blob and is identical to the frame number
+  // in case data segment "Depthmap" is not available use the changed counter of segment 1 as frame
+  // number the changed counter is incremented each Blob and is identical to the frame number
   // segment 1 is always available, so use the changed counter of this segment
   m_dataHandler->clearData(m_changeCounter[1]);
   return true;
@@ -617,9 +648,9 @@ bool SafeVisionaryDataStream::parseBlobData()
 bool SafeVisionaryDataStream::getNextBlobUdp()
 {
   std::vector<uint8_t> receiveBuffer;
-  uint16_t             expectedFragmentNumber{0u};
-  bool                 blobDataComplete{false};
-  bool                 lastFragment{false};
+  uint16_t expectedFragmentNumber{0u};
+  bool blobDataComplete{false};
+  bool lastFragment{false};
 
   m_blobDataBuffer.clear();
 
@@ -627,7 +658,8 @@ bool SafeVisionaryDataStream::getNextBlobUdp()
   {
     if (parseBlobHeaderUdp())
     {
-      // in case the Blob data consists only of one fragment, nothing has to be done here, the following loop must not be entered
+      // in case the Blob data consists only of one fragment, nothing has to be done here, the
+      // following loop must not be entered
       blobDataComplete = lastFragment;
       while (!blobDataComplete)
       {
@@ -649,7 +681,9 @@ bool SafeVisionaryDataStream::getNextBlobUdp()
         {
           //@todo Remove error message and start to receive a new Blob instead?
           // a new Blob has started (and we missed the rest of the BLOB we were just reading)
-          std::printf("Unexpected Blob Number: expected value: %d, received value: %d\n", m_blobNumber, udpProtocolData.blobNumber);
+          std::printf("Unexpected Blob Number: expected value: %d, received value: %d\n",
+                      m_blobNumber,
+                      udpProtocolData.blobNumber);
           m_lastDataStreamError = DataStreamError::INVALID_BLOB_NUMBER;
           break;
         }
@@ -658,7 +692,9 @@ bool SafeVisionaryDataStream::getNextBlobUdp()
         {
           //@todo Remove error message and start to receive a new Blob instead?
           // expected frame number does not match, we probably lost one fragment
-          std::printf("Unexpected fragment number: expected value: %d, received value: %d\n", expectedFragmentNumber, udpProtocolData.fragmentNumber);
+          std::printf("Unexpected fragment number: expected value: %d, received value: %d\n",
+                      expectedFragmentNumber,
+                      udpProtocolData.fragmentNumber);
           m_lastDataStreamError = DataStreamError::INVALID_UDP_FRAGMENT_NUMBER;
           break;
         }
@@ -666,7 +702,8 @@ bool SafeVisionaryDataStream::getNextBlobUdp()
         // append payload of new fragment to the Blob data
         uint8_t* const blobDataBufferEnd = m_blobDataBuffer.data() + m_blobDataBuffer.size();
         m_blobDataBuffer.resize(m_blobDataBuffer.size() + udpProtocolData.dataLength);
-        memcpy(blobDataBufferEnd, &receiveBuffer[sizeof(UdpDataHeader)], udpProtocolData.dataLength);
+        memcpy(
+          blobDataBufferEnd, &receiveBuffer[sizeof(UdpDataHeader)], udpProtocolData.dataLength);
 
         if (udpProtocolData.isLastFragment)
         {
@@ -692,8 +729,8 @@ bool SafeVisionaryDataStream::getNextBlobUdp()
 bool SafeVisionaryDataStream::getNextBlobTcp(std::vector<std::uint8_t>& receiveBufferPacketSize)
 {
   std::vector<uint8_t> receiveBuffer;
-  bool                 blobDataComplete{false};
-  int32_t              receiveSize = 0;
+  bool blobDataComplete{false};
+  int32_t receiveSize = 0;
 
   m_blobDataBuffer.clear();
 

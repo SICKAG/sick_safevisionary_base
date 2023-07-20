@@ -17,8 +17,7 @@
 #include <memory>
 #include <string>
 
-namespace visionary
-{
+namespace visionary {
 class SafeVisionaryControl
 {
 public:
@@ -78,10 +77,10 @@ private:
   std::string receiveCoLaResponse();
   CoLaCommand receiveCoLaCommand();
 
-  std::unique_ptr<TcpSocket>        m_pTransport;
+  std::unique_ptr<TcpSocket> m_pTransport;
   std::unique_ptr<IProtocolHandler> m_pProtocolHandler;
-  std::unique_ptr<IAuthentication>  m_pAuthentication;
-  std::unique_ptr<ControlSession>   m_pControlSession;
+  std::unique_ptr<IAuthentication> m_pAuthentication;
+  std::unique_ptr<ControlSession> m_pControlSession;
 };
 
 } // namespace visionary

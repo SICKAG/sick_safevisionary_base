@@ -1,21 +1,19 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: November 2019
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
 #pragma once
+#include "CoLaCommand.h"
 #include "IProtocolHandler.h"
 #include "ITransport.h"
-#include "CoLaCommand.h"
 
-namespace visionary 
-{
+namespace visionary {
 
-class CoLaBProtocolHandler:
-  public IProtocolHandler
+class CoLaBProtocolHandler : public IProtocolHandler
 {
 public:
   CoLaBProtocolHandler(ITransport& rTransport);
@@ -32,4 +30,4 @@ private:
   uint8_t calculateChecksum(const std::vector<uint8_t>& buffer);
 };
 
-}
+} // namespace visionary

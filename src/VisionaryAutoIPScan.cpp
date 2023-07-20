@@ -1,38 +1,34 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: November 2019
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
 #if (_MSC_VER >= 1700)
 
-#include <sstream>
-#include <memory>
+#  include <memory>
+#  include <sstream>
 
-#include <string>
-#include <random>
-#include <chrono>
+#  include <chrono>
+#  include <random>
+#  include <string>
 
 // TinyXML-2 XML DOM parser
-#include "sick_safevisionary_base/tinyxml2.h"
+#  include "sick_safevisionary_base/tinyxml2.h"
 
-#include "sick_safevisionary_base/VisionaryAutoIPScan.h"
-#include "sick_safevisionary_base/UdpSocket.h"
+#  include "sick_safevisionary_base/UdpSocket.h"
+#  include "sick_safevisionary_base/VisionaryAutoIPScan.h"
 
-namespace visionary 
-{
+namespace visionary {
 
-VisionaryAutoIPScan::VisionaryAutoIPScan()
-{
-}
+VisionaryAutoIPScan::VisionaryAutoIPScan() {}
 
-VisionaryAutoIPScan::~VisionaryAutoIPScan()
-{
-}
+VisionaryAutoIPScan::~VisionaryAutoIPScan() {}
 
-std::vector<VisionaryAutoIPScan::DeviceInfo> VisionaryAutoIPScan::doScan(int timeOut, const std::string& broadcastAddress, uint16_t port)
+std::vector<VisionaryAutoIPScan::DeviceInfo>
+VisionaryAutoIPScan::doScan(int timeOut, const std::string& broadcastAddress, uint16_t port)
 {
   // Init Random generator
   std::random_device rd;
@@ -49,12 +45,12 @@ std::vector<VisionaryAutoIPScan::DeviceInfo> VisionaryAutoIPScan::doScan(int tim
 
   // AutoIP Discover Packet
   std::vector<uint8_t> autoIpPacket;
-  autoIpPacket.push_back(0x10); //CMD
-  autoIpPacket.push_back(0x0); //reserved
-  //length of datablock
+  autoIpPacket.push_back(0x10); // CMD
+  autoIpPacket.push_back(0x0);  // reserved
+  // length of datablock
   autoIpPacket.push_back(0x0);
   autoIpPacket.push_back(0x0);
-  //Mac address
+  // Mac address
   autoIpPacket.push_back(0xFF);
   autoIpPacket.push_back(0xFF);
   autoIpPacket.push_back(0xFF);
@@ -66,7 +62,7 @@ std::vector<VisionaryAutoIPScan::DeviceInfo> VisionaryAutoIPScan::doScan(int tim
   autoIpPacket.push_back(0x0);
   autoIpPacket.push_back(0x0);
   autoIpPacket.push_back(0x0);
-  //reserved
+  // reserved
   autoIpPacket.push_back(0x0);
   autoIpPacket.push_back(0x0);
 
@@ -90,15 +86,16 @@ std::vector<VisionaryAutoIPScan::DeviceInfo> VisionaryAutoIPScan::doScan(int tim
     if (pTransport->recv(receiveBuffer, 1400) > 16) // 16 bytes minsize
     {
       unsigned int pos = 0;
-      if (receiveBuffer[pos++] != 0x90) //0x90 = answer package id and 16 bytes minsize
+      if (receiveBuffer[pos++] != 0x90) // 0x90 = answer package id and 16 bytes minsize
       {
         continue;
       }
       pos += 1; // unused byte
       unsigned int payLoadSize = receiveBuffer[pos] << 8 | receiveBuffer[pos + 1];
       pos += 2;
-      pos += 6; //Skip mac address(part of xml)
-      unsigned int recvTelegramID = receiveBuffer[pos] | receiveBuffer[pos + 1] << 8 | receiveBuffer[pos + 2] << 16 | receiveBuffer[pos + 3] << 24;
+      pos += 6; // Skip mac address(part of xml)
+      unsigned int recvTelegramID = receiveBuffer[pos] | receiveBuffer[pos + 1] << 8 |
+                                    receiveBuffer[pos + 2] << 16 | receiveBuffer[pos + 3] << 24;
       pos += 4;
       // check if it is a response to our scan
       if (recvTelegramID != curtelegramID)
@@ -118,19 +115,20 @@ std::vector<VisionaryAutoIPScan::DeviceInfo> VisionaryAutoIPScan::doScan(int tim
       }
       catch (...)
       {
-
       }
     }
   }
   return deviceList;
 }
 
-VisionaryAutoIPScan::DeviceInfo VisionaryAutoIPScan::parseAutoIPXml(std::stringstream& rStringStream)
+VisionaryAutoIPScan::DeviceInfo
+VisionaryAutoIPScan::parseAutoIPXml(std::stringstream& rStringStream)
 {
   // Parse XML string into DOM
   tinyxml2::XMLDocument tree;
   auto tXMLError = tree.Parse(rStringStream.str());
-  if (tXMLError != tinyxml2::XMLError::XML_SUCCESS) {
+  if (tXMLError != tinyxml2::XMLError::XML_SUCCESS)
+  {
     std::printf("Reading XML tree in AutoIP NetScan result failed.");
     return false;
   }
@@ -182,5 +180,5 @@ VisionaryAutoIPScan::DeviceInfo VisionaryAutoIPScan::parseAutoIPXml(std::strings
   return dI;
 }
 
-}
+} // namespace visionary
 #endif

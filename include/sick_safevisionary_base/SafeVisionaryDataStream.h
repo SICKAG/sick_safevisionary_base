@@ -14,15 +14,14 @@
 #include <memory>
 #include <vector>
 
-namespace visionary
-{
+namespace visionary {
 /// Meta data contained in a UDP header
 struct UdpProtocolData
 {
   uint16_t blobNumber;     ///< BLOB number, incremented for each new Blob
   uint16_t fragmentNumber; ///< fragment number, incremented for each new fragment of the Blob
   uint16_t dataLength;     ///< length of the payload within the fragment
-  bool     isLastFragment; ///< flag whether this was the last fragment of a Blob
+  bool isLastFragment;     ///< flag whether this was the last fragment of a Blob
 };
 
 enum class DataStreamError
@@ -64,7 +63,8 @@ public:
   /// \retval false The connection attempt failed; the sensor is either
   ///               - switched off or streams on a different UPD port
   ///               - not available using for PCs network settings (different subnet)
-  ///               - the protocol type or the port did not match. Please check your sensor documentation.
+  ///               - the protocol type or the port did not match. Please check your sensor
+  ///               documentation.
   bool openUdpConnection(std::uint16_t port);
 
   /// Connects to the sensor data stream using the given TCP port and given IPAddress
@@ -137,19 +137,21 @@ private:
   /// Furthermore it returns some metadata regarding the fragment.
   ///
   /// \param[in] buffer Vector which contains the received UDP telegram
-  /// \param[out] udpProtocolData reference to the UDP protocol data which is gotten from the UDP telegram for later use
-  /// \return Returns true in case the UDP header is valid
+  /// \param[out] udpProtocolData reference to the UDP protocol data which is gotten from the UDP
+  /// telegram for later use \return Returns true in case the UDP header is valid
   bool parseUdpHeader(std::vector<std::uint8_t>& buffer, UdpProtocolData& udpProtocolData);
 
   /// Finds the start of the next Blob data.
   ///
-  /// This function gets the next Blob data telegram until a telegram with the fragment number 0 is received.
-  /// In case the Blob data start has been found, this telegram is stored in the internal BlobData buffer.
-  /// \param[out] lastFragment true in case the Blob data consists only of one fragment
+  /// This function gets the next Blob data telegram until a telegram with the fragment number 0 is
+  /// received. In case the Blob data start has been found, this telegram is stored in the internal
+  /// BlobData buffer. \param[out] lastFragment true in case the Blob data consists only of one
+  /// fragment
   bool getBlobStartUdp(bool& lastFragment);
 
   /// Parses and checks the Blob header of a complete Blob data telegram.
-  /// In case the Blob header is valid, the offset and change counter of each Blob data segment is stored.
+  /// In case the Blob header is valid, the offset and change counter of each Blob data segment is
+  /// stored.
   ///
   /// \return Returns true in case the Blob header is valid
   bool parseBlobHeaderUdp();
@@ -161,7 +163,8 @@ private:
   bool parseBlobHeaderTcp();
 
   /// Parses the segments of the Blob data
-  /// \return Returns true in case the parsing of the Blob data has been successful, otherwise returns false
+  /// \return Returns true in case the parsing of the Blob data has been successful, otherwise
+  /// returns false
   bool parseBlobData();
 };
 

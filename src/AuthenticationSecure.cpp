@@ -1,21 +1,20 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: January 2022
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
 #include "sick_safevisionary_base/AuthenticationSecure.h"
-#include "sick_safevisionary_base/CoLaParameterWriter.h"
 #include "sick_safevisionary_base/CoLaParameterReader.h"
+#include "sick_safevisionary_base/CoLaParameterWriter.h"
 #include "sick_safevisionary_base/SHA256.h"
 
-namespace visionary 
-{
+namespace visionary {
 
 namespace {
-enum class ChallengeResponseResult: std::uint8_t
+enum class ChallengeResponseResult : std::uint8_t
 {
   SUCCESS           = 0u,
   INVALID_CLIENT    = 1u,
@@ -26,69 +25,70 @@ enum class ChallengeResponseResult: std::uint8_t
 };
 }
 
-AuthenticationSecure::AuthenticationSecure(SafeVisionaryControl& vctrl):
-  m_VisionaryControl(vctrl)
+AuthenticationSecure::AuthenticationSecure(SafeVisionaryControl& vctrl)
+  : m_VisionaryControl(vctrl)
 {
 }
 
-AuthenticationSecure::~AuthenticationSecure()
-{
-}
+AuthenticationSecure::~AuthenticationSecure() {}
 
-PasswordHash AuthenticationSecure::CreatePasswortHash(UserLevel userLevel, const std::string& password, const ChallengeRequest& challengeRequest)
+PasswordHash AuthenticationSecure::CreatePasswortHash(UserLevel userLevel,
+                                                      const std::string& password,
+                                                      const ChallengeRequest& challengeRequest)
 {
   PasswordHash passwordHash{};
   std::string passwordPrefix{};
 
   switch (userLevel)
   {
-    case UserLevel::RUN:
-    {
+    case UserLevel::RUN: {
       passwordPrefix = "Run";
       break;
     }
-    case UserLevel::OPERATOR:
-    {
+    case UserLevel::OPERATOR: {
       passwordPrefix = "Operator";
       break;
     }
-    case UserLevel::MAINTENANCE:
-    {
+    case UserLevel::MAINTENANCE: {
       passwordPrefix = "Maintenance";
       break;
     }
-    case UserLevel::AUTHORIZED_CLIENT:
-    {
+    case UserLevel::AUTHORIZED_CLIENT: {
       passwordPrefix = "AuthorizedClient";
       break;
     }
-    case UserLevel::SERVICE:
-    {
+    case UserLevel::SERVICE: {
       passwordPrefix = "Service";
       break;
     }
-    default:
-    {
+    default: {
       // return empty hash code in case of error
       return passwordHash;
       break;
     }
   }
-  std::string separator = ":";
+  std::string separator          = ":";
   std::string passwordWithPrefix = passwordPrefix + ":SICK Sensor:" + password;
 
   hash_state hashState{};
   sha256_init(&hashState);
 
-  sha256_process(&hashState, reinterpret_cast<const uint8_t*>(passwordWithPrefix.c_str()), static_cast<std::uint32_t>(passwordWithPrefix.size()));
-  sha256_process(&hashState, reinterpret_cast<const uint8_t*>(separator.c_str()), static_cast<std::uint32_t>(separator.size()));
-  sha256_process(&hashState, challengeRequest.salt.data(), static_cast<std::uint32_t>(challengeRequest.salt.size()));
+  sha256_process(&hashState,
+                 reinterpret_cast<const uint8_t*>(passwordWithPrefix.c_str()),
+                 static_cast<std::uint32_t>(passwordWithPrefix.size()));
+  sha256_process(&hashState,
+                 reinterpret_cast<const uint8_t*>(separator.c_str()),
+                 static_cast<std::uint32_t>(separator.size()));
+  sha256_process(&hashState,
+                 challengeRequest.salt.data(),
+                 static_cast<std::uint32_t>(challengeRequest.salt.size()));
   sha256_done(&hashState, passwordHash.data());
 
   return passwordHash;
 }
 
-ChallengeResponse AuthenticationSecure::CreateChallengeResponse(UserLevel userLevel, const std::string& password, const ChallengeRequest& challengeRequest)
+ChallengeResponse AuthenticationSecure::CreateChallengeResponse(
+  UserLevel userLevel, const std::string& password, const ChallengeRequest& challengeRequest)
 {
   ChallengeResponse challengeResponse{};
   PasswordHash passwordHash = CreatePasswortHash(userLevel, password, challengeRequest);
@@ -96,7 +96,9 @@ ChallengeResponse AuthenticationSecure::CreateChallengeResponse(UserLevel userLe
   hash_state hashState{};
   sha256_init(&hashState);
   sha256_process(&hashState, passwordHash.data(), static_cast<std::uint32_t>(passwordHash.size()));
-  sha256_process(&hashState, challengeRequest.challenge.data(), static_cast<std::uint32_t>(challengeRequest.challenge.size()));
+  sha256_process(&hashState,
+                 challengeRequest.challenge.data(),
+                 static_cast<std::uint32_t>(challengeRequest.challenge.size()));
   sha256_done(&hashState, challengeResponse.data());
 
   return challengeResponse;
@@ -107,8 +109,10 @@ bool AuthenticationSecure::login(UserLevel userLevel, const std::string& passwor
   bool isLoginSuccessful{false};
 
   // create command to get the challenge
-  CoLaCommand getChallengeCommand = CoLaParameterWriter(CoLaCommandType::METHOD_INVOCATION, "GetChallenge")
-		  .parameterUSInt(static_cast<uint8_t>(userLevel)).build();
+  CoLaCommand getChallengeCommand =
+    CoLaParameterWriter(CoLaCommandType::METHOD_INVOCATION, "GetChallenge")
+      .parameterUSInt(static_cast<uint8_t>(userLevel))
+      .build();
 
   // send command and get the response
   CoLaCommand getChallengeResponse = m_VisionaryControl.sendCommand(getChallengeCommand);
@@ -116,49 +120,56 @@ bool AuthenticationSecure::login(UserLevel userLevel, const std::string& passwor
   // check whether there occurred an error with the CoLa communication
   if (getChallengeResponse.getError() == CoLaError::OK)
   {
-	// read and check response of GetChallenge command
-	CoLaParameterReader coLaParameterReader = CoLaParameterReader(getChallengeResponse);
-	if(static_cast<ChallengeResponseResult>(coLaParameterReader.readUSInt()) == ChallengeResponseResult::SUCCESS)
-	{
+    // read and check response of GetChallenge command
+    CoLaParameterReader coLaParameterReader = CoLaParameterReader(getChallengeResponse);
+    if (static_cast<ChallengeResponseResult>(coLaParameterReader.readUSInt()) ==
+        ChallengeResponseResult::SUCCESS)
+    {
       ChallengeRequest challengeRequest{};
-      for (std::uint32_t byteCounter = 0u; byteCounter < sizeof(challengeRequest.challenge); byteCounter++)
+      for (std::uint32_t byteCounter = 0u; byteCounter < sizeof(challengeRequest.challenge);
+           byteCounter++)
       {
-    	challengeRequest.challenge[byteCounter] = coLaParameterReader.readUSInt();
+        challengeRequest.challenge[byteCounter] = coLaParameterReader.readUSInt();
       }
-      for (std::uint32_t byteCounter = 0u; byteCounter < sizeof(challengeRequest.salt); byteCounter++)
+      for (std::uint32_t byteCounter = 0u; byteCounter < sizeof(challengeRequest.salt);
+           byteCounter++)
       {
         challengeRequest.salt[byteCounter] = coLaParameterReader.readUSInt();
       }
 
-      ChallengeResponse challengeResponse = CreateChallengeResponse(userLevel, password, challengeRequest);
+      ChallengeResponse challengeResponse =
+        CreateChallengeResponse(userLevel, password, challengeRequest);
 
-      CoLaParameterWriter coLaParameterWriter = CoLaParameterWriter(CoLaCommandType::METHOD_INVOCATION, "SetUserLevel");
+      CoLaParameterWriter coLaParameterWriter =
+        CoLaParameterWriter(CoLaCommandType::METHOD_INVOCATION, "SetUserLevel");
 
       // add challenge response value to set user level command
       for (std::uint32_t byteCounter = 0u; byteCounter < challengeResponse.size(); byteCounter++)
       {
-    	  coLaParameterWriter.parameterUSInt(challengeResponse[byteCounter]);
+        coLaParameterWriter.parameterUSInt(challengeResponse[byteCounter]);
       }
 
       // add user Level to command and build it
-      CoLaCommand getUserLevelCommand = coLaParameterWriter.parameterUSInt(static_cast<uint8_t>(userLevel)).build();
-	  CoLaCommand getUserLevelResponse = m_VisionaryControl.sendCommand(getUserLevelCommand);
-	  if (getUserLevelResponse.getError() == CoLaError::OK)
-	  {
+      CoLaCommand getUserLevelCommand =
+        coLaParameterWriter.parameterUSInt(static_cast<uint8_t>(userLevel)).build();
+      CoLaCommand getUserLevelResponse = m_VisionaryControl.sendCommand(getUserLevelCommand);
+      if (getUserLevelResponse.getError() == CoLaError::OK)
+      {
         coLaParameterReader = CoLaParameterReader(getUserLevelResponse);
-        if(static_cast<ChallengeResponseResult>(coLaParameterReader.readUSInt()) == ChallengeResponseResult::SUCCESS)
+        if (static_cast<ChallengeResponseResult>(coLaParameterReader.readUSInt()) ==
+            ChallengeResponseResult::SUCCESS)
         {
           isLoginSuccessful = true;
         }
-	  }
-	}
+      }
+    }
   }
   return isLoginSuccessful;
 }
 
 bool AuthenticationSecure::logout()
 {
-  CoLaCommand runCommand = CoLaParameterWriter(CoLaCommandType::METHOD_INVOCATION, "Run").build();
+  CoLaCommand runCommand  = CoLaParameterWriter(CoLaCommandType::METHOD_INVOCATION, "Run").build();
   CoLaCommand runResponse = m_VisionaryControl.sendCommand(runCommand);
 
   if (runResponse.getError() == CoLaError::OK)
@@ -168,4 +179,4 @@ bool AuthenticationSecure::logout()
   return false;
 }
 
-}
+} // namespace visionary

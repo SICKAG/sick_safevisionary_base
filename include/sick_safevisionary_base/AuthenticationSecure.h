@@ -1,8 +1,8 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: January 2022
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
@@ -10,8 +10,7 @@
 #include "SafeVisionaryControl.h"
 #include <array>
 
-namespace visionary 
-{
+namespace visionary {
 
 struct ChallengeRequest
 {
@@ -23,8 +22,7 @@ typedef std::array<std::uint8_t, 32> PasswordHash;
 typedef std::array<std::uint8_t, 32> ChallengeResponse;
 
 
-class AuthenticationSecure:
-  public IAuthentication
+class AuthenticationSecure : public IAuthentication
 {
 public:
   explicit AuthenticationSecure(SafeVisionaryControl& vctrl);
@@ -36,9 +34,12 @@ public:
 private:
   SafeVisionaryControl& m_VisionaryControl;
 
-  PasswordHash CreatePasswortHash(UserLevel userLevel, const std::string& password, const ChallengeRequest& challengeRequest);
-  ChallengeResponse CreateChallengeResponse(UserLevel userLevel, const std::string& password, const ChallengeRequest& challengeRequest);
-
+  PasswordHash CreatePasswortHash(UserLevel userLevel,
+                                  const std::string& password,
+                                  const ChallengeRequest& challengeRequest);
+  ChallengeResponse CreateChallengeResponse(UserLevel userLevel,
+                                            const std::string& password,
+                                            const ChallengeRequest& challengeRequest);
 };
 
-}
+} // namespace visionary

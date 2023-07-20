@@ -1,30 +1,31 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: December 2019
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
 #include "sick_safevisionary_base/AuthenticationLegacy.h"
-#include "sick_safevisionary_base/CoLaParameterWriter.h"
 #include "sick_safevisionary_base/CoLaParameterReader.h"
+#include "sick_safevisionary_base/CoLaParameterWriter.h"
 
-namespace visionary 
-{
+namespace visionary {
 
-AuthenticationLegacy::AuthenticationLegacy(VisionaryControl& vctrl):
-  m_VisionaryControl(vctrl)
-{
-}
-
-AuthenticationLegacy::~AuthenticationLegacy()
+AuthenticationLegacy::AuthenticationLegacy(VisionaryControl& vctrl)
+  : m_VisionaryControl(vctrl)
 {
 }
+
+AuthenticationLegacy::~AuthenticationLegacy() {}
 
 bool AuthenticationLegacy::login(UserLevel userLevel, const std::string& password)
 {
-  CoLaCommand loginCommand = CoLaParameterWriter(CoLaCommandType::METHOD_INVOCATION, "SetAccessMode").parameterSInt(static_cast<int8_t>(userLevel)).parameterPasswordMD5(password).build();
+  CoLaCommand loginCommand =
+    CoLaParameterWriter(CoLaCommandType::METHOD_INVOCATION, "SetAccessMode")
+      .parameterSInt(static_cast<int8_t>(userLevel))
+      .parameterPasswordMD5(password)
+      .build();
   CoLaCommand loginResponse = m_VisionaryControl.sendCommand(loginCommand);
 
 
@@ -37,7 +38,7 @@ bool AuthenticationLegacy::login(UserLevel userLevel, const std::string& passwor
 
 bool AuthenticationLegacy::logout()
 {
-  CoLaCommand runCommand = CoLaParameterWriter(CoLaCommandType::METHOD_INVOCATION, "Run").build();
+  CoLaCommand runCommand  = CoLaParameterWriter(CoLaCommandType::METHOD_INVOCATION, "Run").build();
   CoLaCommand runResponse = m_VisionaryControl.sendCommand(runCommand);
 
   if (runResponse.getError() == CoLaError::OK)
@@ -47,4 +48,4 @@ bool AuthenticationLegacy::logout()
   return false;
 }
 
-}
+} // namespace visionary

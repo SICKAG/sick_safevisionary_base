@@ -1,42 +1,40 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: January 2020
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
 #pragma once
-#include <string>
 #include <cstdint>
+#include <string>
 
 #include "ITransport.h"
 
 // Include socket
-#ifdef _WIN32    // Windows specific
-#include <winsock2.h>
-#include <Ws2tcpip.h>
+#ifdef _WIN32 // Windows specific
+#  include <Ws2tcpip.h>
+#  include <winsock2.h>
 // to use with other compiler than Visual C++ need to set Linker flag -lws2_32
-#ifdef _MSC_VER
-#pragma comment(lib,"ws2_32.lib")
-#endif
-#else        // Linux specific
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
+#  ifdef _MSC_VER
+#    pragma comment(lib, "ws2_32.lib")
+#  endif
+#else // Linux specific
+#  include <arpa/inet.h>
+#  include <netinet/in.h>
+#  include <sys/socket.h>
+#  include <sys/types.h>
+#  include <unistd.h>
 
 typedef int SOCKET;
-#define INVALID_SOCKET  ((SOCKET)(~0))
-#define SOCKET_ERROR    (-1)
+#  define INVALID_SOCKET ((SOCKET)(~0))
+#  define SOCKET_ERROR (-1)
 #endif
 
-namespace visionary 
-{
+namespace visionary {
 
-class UdpSocket :
-  public ITransport
+class UdpSocket : public ITransport
 {
 public:
   UdpSocket();
@@ -56,4 +54,4 @@ private:
   int initSocket();
 };
 
-}
+} // namespace visionary

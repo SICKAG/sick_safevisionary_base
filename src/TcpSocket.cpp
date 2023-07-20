@@ -1,15 +1,14 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: November 2019
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
 #include "sick_safevisionary_base/TcpSocket.h"
 
-namespace visionary 
-{
+namespace visionary {
 
 int TcpSocket::connect(const std::string& hostname, uint16_t port)
 {
@@ -29,15 +28,16 @@ int TcpSocket::connect(const std::string& hostname, uint16_t port)
   //-----------------------------------------------
   // Create a receiver socket to receive datagrams
   m_socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  if (m_socket == INVALID_SOCKET) {
+  if (m_socket == INVALID_SOCKET)
+  {
     return (int)INVALID_SOCKET;
   }
 
   //-----------------------------------------------
   // Bind the socket to any address and the specified port.
   sockaddr_in recvAddr;
-  recvAddr.sin_family = AF_INET;
-  recvAddr.sin_port = port;
+  recvAddr.sin_family      = AF_INET;
+  recvAddr.sin_port        = port;
   recvAddr.sin_addr.s_addr = inet_addr(hostname.c_str());
 
   iResult = ::connect(m_socket, (sockaddr*)&recvAddr, sizeof(recvAddr));
@@ -50,13 +50,14 @@ int TcpSocket::connect(const std::string& hostname, uint16_t port)
   // Set the timeout for the socket to 5 seconds
   long timeoutSeconds = 5L;
 #ifdef _WIN32
-  // On Windows timeout is a DWORD in milliseconds (https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-setsockopt)
+  // On Windows timeout is a DWORD in milliseconds
+  // (https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-setsockopt)
   long timeoutMs = timeoutSeconds * 1000L;
   iResult = setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeoutMs, sizeof(DWORD));
 #else
   struct timeval tv;
-  tv.tv_sec = timeoutSeconds;  /* 5 seconds Timeout */
-  tv.tv_usec = 0L;  // Not init'ing this can cause strange errors
+  tv.tv_sec  = timeoutSeconds; /* 5 seconds Timeout */
+  tv.tv_usec = 0L;             // Not init'ing this can cause strange errors
   iResult = setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(struct timeval));
 #endif
 
@@ -80,25 +81,25 @@ int TcpSocket::openServer(uint16_t port)
   //-----------------------------------------------
   // Create a server TCP socket to be able to connect to TCP clients
   m_socketServer = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  if (m_socketServer == INVALID_SOCKET) {
+  if (m_socketServer == INVALID_SOCKET)
+  {
     return (int)INVALID_SOCKET;
   }
 
   //-----------------------------------------------
   // Bind the socket to any address and the specified port.
   sockaddr_in server;
-  server.sin_family = AF_INET;
-  server.sin_port = port;
+  server.sin_family      = AF_INET;
+  server.sin_port        = port;
   server.sin_addr.s_addr = INADDR_ANY;
 
-  iResult = bind(m_socketServer ,(sockaddr*)&server , sizeof(server));
+  iResult = bind(m_socketServer, (sockaddr*)&server, sizeof(server));
   if (iResult == 0)
   {
     iResult = listen(m_socketServer, 1);
   }
   return iResult;
 }
-
 
 
 int TcpSocket::openTcp(uint16_t port)
@@ -119,19 +120,20 @@ int TcpSocket::openTcp(uint16_t port)
   //-----------------------------------------------
   // Create a TCP socket to be able to connect to TCP device
   m_socketTcp = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  if (m_socketTcp == INVALID_SOCKET) {
-	  std::printf("TCP socket is not created\n");
+  if (m_socketTcp == INVALID_SOCKET)
+  {
+    std::printf("TCP socket is not created\n");
     return (int)INVALID_SOCKET;
   }
 
   //-----------------------------------------------
   // Bind the socket to any address and the specified port.
   sockaddr_in saddr;
-  saddr.sin_family = AF_INET;
-  saddr.sin_port = port;
+  saddr.sin_family      = AF_INET;
+  saddr.sin_port        = port;
   saddr.sin_addr.s_addr = INADDR_ANY;
 
-  iResult = bind(m_socketTcp ,(sockaddr*)&saddr , sizeof(saddr));
+  iResult = bind(m_socketTcp, (sockaddr*)&saddr, sizeof(saddr));
 
   return iResult;
 }
@@ -143,12 +145,12 @@ bool TcpSocket::WaitForConnection()
   SOCKET clientSocket;
   int size = sizeof(sockaddr_in);
 
-  clientSocket = accept(m_socketServer , (sockaddr*)&client, (socklen_t*)&size);
+  clientSocket = accept(m_socketServer, (sockaddr*)&client, (socklen_t*)&size);
 
   if (clientSocket != INVALID_SOCKET)
   {
     m_socket = clientSocket;
-    res = true;
+    res      = true;
     printf("Connected to IP: %s, Port: %d\n", inet_ntoa(client.sin_addr), client.sin_port);
   }
   return res;
@@ -167,9 +169,9 @@ int TcpSocket::shutdown()
   close(m_socketServer);
   close(m_socketTcp);
 #endif
-  m_socket = INVALID_SOCKET;
+  m_socket       = INVALID_SOCKET;
   m_socketServer = INVALID_SOCKET;
-  m_socketTcp = INVALID_SOCKET;
+  m_socketTcp    = INVALID_SOCKET;
 
   return 0;
 }
@@ -211,4 +213,4 @@ int TcpSocket::read(std::vector<std::uint8_t>& buffer, std::size_t nBytesToRecei
   return buffer.size();
 }
 
-}
+} // namespace visionary

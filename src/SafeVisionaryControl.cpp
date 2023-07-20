@@ -18,15 +18,10 @@
 #include "sick_safevisionary_base/VisionaryEndian.h"
 #include <cassert>
 
-namespace visionary
-{
-SafeVisionaryControl::SafeVisionaryControl()
-{
-}
+namespace visionary {
+SafeVisionaryControl::SafeVisionaryControl() {}
 
-SafeVisionaryControl::~SafeVisionaryControl()
-{
-}
+SafeVisionaryControl::~SafeVisionaryControl() {}
 
 bool SafeVisionaryControl::open(const std::string& hostname, uint8_t sessionTimeout_s)
 {

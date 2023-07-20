@@ -1,18 +1,17 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: October 2018
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
 #include "sick_safevisionary_base/CoLaCommand.h"
 
-#include <string>
 #include "sick_safevisionary_base/VisionaryEndian.h"
+#include <string>
 
-namespace visionary 
-{
+namespace visionary {
 
 CoLaCommand::CoLaCommand(CoLaCommandType::Enum commandType, CoLaError::Enum error, const char* name)
   : m_buffer()
@@ -21,7 +20,6 @@ CoLaCommand::CoLaCommand(CoLaCommandType::Enum commandType, CoLaError::Enum erro
   , m_parameterOffset(0)
   , m_error(error)
 {
-
 }
 
 CoLaCommand::CoLaCommand(std::vector<uint8_t> buffer)
@@ -35,20 +33,28 @@ CoLaCommand::CoLaCommand(std::vector<uint8_t> buffer)
   if (buffer.size() < 3)
     return;
   std::string typeStr(reinterpret_cast<char*>(&buffer[0]), 3);
-  if (typeStr.compare("sRN") == 0) m_type = CoLaCommandType::READ_VARIABLE;
-  else if (typeStr.compare("sRA") == 0) m_type = CoLaCommandType::READ_VARIABLE_RESPONSE;
-  else if (typeStr.compare("sWN") == 0) m_type = CoLaCommandType::WRITE_VARIABLE;
-  else if (typeStr.compare("sWA") == 0) m_type = CoLaCommandType::WRITE_VARIABLE_RESPONSE;
-  else if (typeStr.compare("sMN") == 0) m_type = CoLaCommandType::METHOD_INVOCATION;
-  else if (typeStr.compare("sAN") == 0) m_type = CoLaCommandType::METHOD_RETURN_VALUE;
-  else if (typeStr.compare("sFA") == 0) m_type = CoLaCommandType::COLA_ERROR;
+  if (typeStr.compare("sRN") == 0)
+    m_type = CoLaCommandType::READ_VARIABLE;
+  else if (typeStr.compare("sRA") == 0)
+    m_type = CoLaCommandType::READ_VARIABLE_RESPONSE;
+  else if (typeStr.compare("sWN") == 0)
+    m_type = CoLaCommandType::WRITE_VARIABLE;
+  else if (typeStr.compare("sWA") == 0)
+    m_type = CoLaCommandType::WRITE_VARIABLE_RESPONSE;
+  else if (typeStr.compare("sMN") == 0)
+    m_type = CoLaCommandType::METHOD_INVOCATION;
+  else if (typeStr.compare("sAN") == 0)
+    m_type = CoLaCommandType::METHOD_RETURN_VALUE;
+  else if (typeStr.compare("sFA") == 0)
+    m_type = CoLaCommandType::COLA_ERROR;
 
-  if(m_type == CoLaCommandType::COLA_ERROR)
+  if (m_type == CoLaCommandType::COLA_ERROR)
   {
     m_parameterOffset = 3; // sFA
 
     // Read error code
-    m_error = static_cast<CoLaError::Enum>(readUnalignColaByteOrder<std::uint16_t>(&buffer[m_parameterOffset]));
+    m_error = static_cast<CoLaError::Enum>(
+      readUnalignColaByteOrder<std::uint16_t>(&buffer[m_parameterOffset]));
   }
   else if (m_type == CoLaCommandType::NETWORK_ERROR)
   {
@@ -61,7 +67,7 @@ CoLaCommand::CoLaCommand(std::vector<uint8_t> buffer)
     {
       if (buffer.at(i) == ' ')
       {
-        m_name = std::string(reinterpret_cast<const char*>(&buffer[4]), i - 4);
+        m_name            = std::string(reinterpret_cast<const char*>(&buffer[4]), i - 4);
         m_parameterOffset = i + 1; // Skip space
         break;
       }
@@ -69,9 +75,7 @@ CoLaCommand::CoLaCommand(std::vector<uint8_t> buffer)
   }
 }
 
-CoLaCommand::~CoLaCommand()
-{
-}
+CoLaCommand::~CoLaCommand() {}
 
 const std::vector<uint8_t>& CoLaCommand::getBuffer()
 {
@@ -103,4 +107,4 @@ CoLaCommand CoLaCommand::networkErrorCommand()
   return CoLaCommand(CoLaCommandType::NETWORK_ERROR, CoLaError::NETWORK_ERROR, "");
 }
 
-}
+} // namespace visionary

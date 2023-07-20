@@ -1,8 +1,8 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: December 2017
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
@@ -27,13 +27,12 @@
 #define COLA_BYTE_ORDER_ENDIAN_LITTLE
 //#define COLA_BYTE_ORDER_ENDIAN_BIG
 
-namespace visionary 
-{
+namespace visionary {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-template<class T>
-T readUnaligned(const void *ptr)
+template <class T>
+T readUnaligned(const void* ptr)
 {
   T r;
   memcpy(&r, ptr, sizeof(T));
@@ -89,9 +88,10 @@ inline int32_t byteswap(int32_t val)
 }
 inline float byteswap(float val)
 {
-  union {
+  union
+  {
     float f32;
-    uint32_t  u32;
+    uint32_t u32;
   } v;
   v.f32 = val;
   v.u32 = byteswap(v.u32);
@@ -113,9 +113,10 @@ inline int64_t byteswap(int64_t val)
 }
 inline double byteswap(double val)
 {
-  union {
+  union
+  {
     double f64;
-    uint64_t  u64;
+    uint64_t u64;
   } v;
   v.f64 = val;
   v.u64 = byteswap(v.u64);
@@ -188,13 +189,13 @@ inline T bigEndianToNative(T x)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 template <typename T>
-inline T readUnalignBigEndian(const void *ptr)
+inline T readUnalignBigEndian(const void* ptr)
 {
   return bigEndianToNative<T>(readUnaligned<T>(ptr));
 }
 
 template <typename T>
-inline T readUnalignLittleEndian(const void *ptr)
+inline T readUnalignLittleEndian(const void* ptr)
 {
   return littleEndianToNative<T>(readUnaligned<T>(ptr));
 }
@@ -206,7 +207,7 @@ inline T nativeToColaByteOrder(T x)
   return nativeToLittleEndian<T>(x);
 }
 template <typename T>
-inline T readUnalignColaByteOrder(const void *ptr)
+inline T readUnalignColaByteOrder(const void* ptr)
 {
   return littleEndianToNative<T>(readUnaligned<T>(ptr));
 }
@@ -217,7 +218,7 @@ inline T nativeToColaByteOrder(T x)
   return nativeToBigEndian<T>(x);
 }
 template <typename T>
-inline T readUnalignColaByteOrder(const void *ptr)
+inline T readUnalignColaByteOrder(const void* ptr)
 {
   return bigEndianToNative<T>(readUnaligned<T>(ptr));
 }
@@ -227,4 +228,4 @@ inline T readUnalignColaByteOrder(const void *ptr)
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-}
+} // namespace visionary

@@ -1,25 +1,22 @@
 //
 // Copyright note: Redistribution and use in source, with or without modification, are permitted.
-// 
+//
 // Created: November 2019
-// 
+//
 // SICK AG, Waldkirch
 // email: TechSupport0905@sick.de
 
 #include "sick_safevisionary_base/CoLaBProtocolHandler.h"
 #include "sick_safevisionary_base/VisionaryEndian.h"
 
-namespace visionary 
-{
+namespace visionary {
 
 CoLaBProtocolHandler::CoLaBProtocolHandler(ITransport& rTransport)
-: m_rTransport(rTransport)
+  : m_rTransport(rTransport)
 {
 }
 
-CoLaBProtocolHandler::~CoLaBProtocolHandler()
-{
-}
+CoLaBProtocolHandler::~CoLaBProtocolHandler() {}
 
 bool CoLaBProtocolHandler::openSession(uint8_t /*sessionTimeout secs*/)
 {
@@ -50,15 +47,16 @@ CoLaCommand CoLaBProtocolHandler::send(CoLaCommand cmd)
     it = buffer.insert(it, MAGIC_BYTE);
   }
   // Overwrite length
-  *reinterpret_cast<uint32_t*>(&buffer[4]) = nativeToBigEndian(static_cast<uint32_t>(buffer.size()) - 8);
-  
+  *reinterpret_cast<uint32_t*>(&buffer[4]) =
+    nativeToBigEndian(static_cast<uint32_t>(buffer.size()) - 8);
+
   // Add checksum to end
   buffer.insert(buffer.end(), calculateChecksum(buffer));
 
   //
   // send to socket
   //
-  
+
   m_rTransport.send(buffer);
   buffer.clear();
 
@@ -89,7 +87,9 @@ CoLaCommand CoLaBProtocolHandler::send(CoLaCommand cmd)
   {
     // get length
     m_rTransport.read(buffer, sizeof(uint32_t));
-    const uint32_t length = readUnalignBigEndian<uint32_t>(buffer.data()) + 1; // packetlength is only the data without STx, Packet Length and Checksum, add Checksum to get end of data
+    const uint32_t length = readUnalignBigEndian<uint32_t>(buffer.data()) +
+                            1; // packetlength is only the data without STx, Packet Length and
+                               // Checksum, add Checksum to get end of data
     buffer.clear();
     m_rTransport.read(buffer, length);
   }
@@ -108,4 +108,4 @@ uint8_t CoLaBProtocolHandler::calculateChecksum(const std::vector<uint8_t>& buff
   return checksum;
 }
 
-}
+} // namespace visionary

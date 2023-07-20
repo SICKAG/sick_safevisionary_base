@@ -15,13 +15,11 @@
 // TinyXML-2 XML DOM parser
 #include "sick_safevisionary_base/tinyxml2.h"
 
-namespace visionary
-{
+namespace visionary {
 
 constexpr float SafeVisionaryData::DISTANCE_MAP_UNIT = 0.25f;
 
-namespace
-{
+namespace {
 /// Version number of the Blob segment DepthMap
 constexpr std::uint16_t VERSION_SEGMENT_DEPTHMAP = 0x0002u;
 
@@ -64,9 +62,7 @@ SafeVisionaryData::SafeVisionaryData()
 {
 }
 
-SafeVisionaryData::~SafeVisionaryData()
-{
-}
+SafeVisionaryData::~SafeVisionaryData() {}
 
 bool SafeVisionaryData::parseXML(const std::string& xmlString, uint32_t changeCounter)
 {
@@ -82,7 +78,7 @@ bool SafeVisionaryData::parseXML(const std::string& xmlString, uint32_t changeCo
   //-----------------------------------------------
   // Parse XML string into DOM
   tinyxml2::XMLDocument xmlTree;
-  auto                  tXMLError = xmlTree.Parse(xmlString.c_str());
+  auto tXMLError = xmlTree.Parse(xmlString.c_str());
   if (tXMLError != tinyxml2::XMLError::XML_SUCCESS)
   {
     std::printf("Reading XML tree in BLOB failed.");
@@ -92,7 +88,7 @@ bool SafeVisionaryData::parseXML(const std::string& xmlString, uint32_t changeCo
 
   //-----------------------------------------------
   // Check whether datasets entry exists and whether it has a depthmap
-  bool                     oParseOk       = true;
+  bool oParseOk                           = true;
   tinyxml2::XMLNode const* ptDataSetsTree = 0;
   {
     ptDataSetsTree = xmlTree.FirstChildElement("SickRecord");
@@ -107,7 +103,7 @@ bool SafeVisionaryData::parseXML(const std::string& xmlString, uint32_t changeCo
       auto const* ptHasNodeOrZero         = ptDataSetsTree->FirstChildElement("DataSetDepthMap");
       m_dataSetsActive.hasDataSetDepthMap = (ptHasNodeOrZero != 0);
 
-      ptHasNodeOrZero                         = ptDataSetsTree->FirstChildElement("DataSetDeviceStatus");
+      ptHasNodeOrZero = ptDataSetsTree->FirstChildElement("DataSetDeviceStatus");
       m_dataSetsActive.hasDataSetDeviceStatus = (ptHasNodeOrZero != 0);
 
       ptHasNodeOrZero                = ptDataSetsTree->FirstChildElement("DataSetROI");
@@ -116,10 +112,10 @@ bool SafeVisionaryData::parseXML(const std::string& xmlString, uint32_t changeCo
       ptHasNodeOrZero                     = ptDataSetsTree->FirstChildElement("DataSetLocalIOs");
       m_dataSetsActive.hasDataSetLocalIOs = (ptHasNodeOrZero != 0);
 
-      ptHasNodeOrZero                      = ptDataSetsTree->FirstChildElement("DataSetFieldInformation");
+      ptHasNodeOrZero = ptDataSetsTree->FirstChildElement("DataSetFieldInformation");
       m_dataSetsActive.hasDataSetFieldInfo = (ptHasNodeOrZero != 0);
 
-      ptHasNodeOrZero                         = ptDataSetsTree->FirstChildElement("DataSetLogicalSignals");
+      ptHasNodeOrZero = ptDataSetsTree->FirstChildElement("DataSetLogicalSignals");
       m_dataSetsActive.hasDataSetLogicSignals = (ptHasNodeOrZero != 0);
 
       ptHasNodeOrZero                = ptDataSetsTree->FirstChildElement("DataSetIMU");
@@ -185,7 +181,8 @@ bool SafeVisionaryData::parseXML(const std::string& xmlString, uint32_t changeCo
     // Camera transformation matrix
     if (m_dataSetsActive.hasDataSetDepthMap and (ptDataStreamTree != 0))
     {
-      auto const* ptCameraToWorldTransform = ptDataStreamTree->FirstChildElement("CameraToWorldTransform");
+      auto const* ptCameraToWorldTransform =
+        ptDataStreamTree->FirstChildElement("CameraToWorldTransform");
       if (ptCameraToWorldTransform != 0)
       {
         auto const* ptMatrixEntry = ptCameraToWorldTransform->FirstChildElement();
@@ -193,7 +190,8 @@ bool SafeVisionaryData::parseXML(const std::string& xmlString, uint32_t changeCo
         {
           tXMLError     = ptMatrixEntry->QueryDoubleText(&m_cameraParams.cam2worldMatrix[idx]);
           ptMatrixEntry = ptMatrixEntry->NextSiblingElement();
-          if ((tXMLError != tinyxml2::XMLError::XML_SUCCESS) or ((idx < 4 * 4 - 1) and (ptMatrixEntry == 0)))
+          if ((tXMLError != tinyxml2::XMLError::XML_SUCCESS) or
+              ((idx < 4 * 4 - 1) and (ptMatrixEntry == 0)))
           {
             oParseOk = false;
             break;
@@ -279,8 +277,8 @@ bool SafeVisionaryData::parseXML(const std::string& xmlString, uint32_t changeCo
     m_intensityByteDepth = getItemLength(getText("Intensity"));
     m_stateByteDepth     = getItemLength(getText("Confidence"));
 
-    // const auto distanceDecimalExponent = dataStreamTree.get<int>("Distance.<xmlattr>.decimalexponent", 0);
-    // Scaling is fixed to 0.25mm
+    // const auto distanceDecimalExponent =
+    // dataStreamTree.get<int>("Distance.<xmlattr>.decimalexponent", 0); Scaling is fixed to 0.25mm
     m_scaleZ = DISTANCE_MAP_UNIT;
   }
 
@@ -346,7 +344,8 @@ bool SafeVisionaryData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, si
   // length does not include the second length field, so add 4 bytes
   if ((length + sizeof(uint32_t)) != size)
   {
-    std::printf("Malformed data, length in data segment depth map header does not match package size.\n");
+    std::printf(
+      "Malformed data, length in data segment depth map header does not match package size.\n");
     m_lastDataHandlerError = DataHandlerError::INVALID_LENGTH_SEGMENT_DEPTHMAP;
     return false;
   }
@@ -357,7 +356,8 @@ bool SafeVisionaryData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, si
   // check whether length matches
   if (length != lengthCopy)
   {
-    std::printf("Malformed data, length of data segment depth map header does not match data segment size.\n");
+    std::printf("Malformed data, length of data segment depth map header does not match data "
+                "segment size.\n");
     m_lastDataHandlerError = DataHandlerError::INVALID_LENGTH_SEGMENT_DEPTHMAP;
     return false;
   }
@@ -609,7 +609,8 @@ bool SafeVisionaryData::parseFieldInformationData(std::vector<uint8_t>::iterator
 
   if (crc32 != crc32Calculated)
   {
-    std::printf("Malformed data, CRC32 checksum of data segment Field Information does not match.\n");
+    std::printf(
+      "Malformed data, CRC32 checksum of data segment Field Information does not match.\n");
     m_lastDataHandlerError = DataHandlerError::INVALID_CRC_SEGMENT_FIELDINFORMATION;
     return false;
   }
@@ -617,7 +618,8 @@ bool SafeVisionaryData::parseFieldInformationData(std::vector<uint8_t>::iterator
   // length does not include the second length field, so add 4 bytes
   if ((length + sizeof(uint32_t)) != size)
   {
-    std::printf("Malformed data, length of data segment Field Information does not match package size.\n");
+    std::printf(
+      "Malformed data, length of data segment Field Information does not match package size.\n");
     m_lastDataHandlerError = DataHandlerError::INVALID_LENGTH_SEGMENT_FIELDINFORMATION;
     return false;
   }
@@ -677,7 +679,8 @@ bool SafeVisionaryData::parseLogicSignalsData(std::vector<uint8_t>::iterator itB
   // length does not include the second length field, so add 4 bytes
   if ((length + sizeof(uint32_t)) != size)
   {
-    std::printf("Malformed data, length of data segment Logic Signals does not match package size.\n");
+    std::printf(
+      "Malformed data, length of data segment Logic Signals does not match package size.\n");
     m_lastDataHandlerError = DataHandlerError::INVALID_LENGTH_SEGMENT_LOGICSIGNALS;
     return false;
   }
@@ -752,7 +755,7 @@ bool SafeVisionaryData::parseIMUData(std::vector<uint8_t>::iterator itBuf, size_
     return false;
   }
 
-  m_blobTimestamp = readUnalignLittleEndian<uint64_t>(&*itBuf);
+  m_blobTimestamp                 = readUnalignLittleEndian<uint64_t>(&*itBuf);
   m_segmentTimestamp[IMU_SEGMENT] = m_blobTimestamp;
   itBuf += sizeof(uint64_t);
 

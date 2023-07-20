@@ -13,24 +13,24 @@
 
 #include "VisionaryData.h"
 
-#define DEPTHMAP_SEGMENT         1
-#define DEVICESTATUS_SEGMENT     2
-#define ROI_SEGMENT              3
-#define LOCALIOS_SEGMENT         4
+#define DEPTHMAP_SEGMENT 1
+#define DEVICESTATUS_SEGMENT 2
+#define ROI_SEGMENT 3
+#define LOCALIOS_SEGMENT 4
 #define FIELDINFORMATION_SEGMENT 5
-#define LOGICSIGNALS_SEGMENT     6
-#define IMU_SEGMENT              7
+#define LOGICSIGNALS_SEGMENT 6
+#define IMU_SEGMENT 7
 
-namespace visionary
-{
+namespace visionary {
 /** Enumeration which describes the various states of the device */
 enum class DEVICE_STATUS : std::uint8_t
 {
-  DEVICE_STATUS_CONFIGURATION       = 0U,  /**< Device is in state CONFIGURATION */
-  DEVICE_STATUS_WAIT_FOR_INPUTS     = 1U,  /**< Device is in state WAIT_FOR_INPUTS */
-  DEVICE_STATUS_APPLICATION_STOPPED = 2U,  /**< Device is in state APPLICATION_STOPPED */
-  DEVICE_STATUS_NORMAL_OPERATION    = 3U,  /**< Device is in state NORMAL_OPERATION, application is running */
-  DEVICE_STATUS_INVALID             = 255U /**< Device status is invalid / not initialized */
+  DEVICE_STATUS_CONFIGURATION       = 0U, /**< Device is in state CONFIGURATION */
+  DEVICE_STATUS_WAIT_FOR_INPUTS     = 1U, /**< Device is in state WAIT_FOR_INPUTS */
+  DEVICE_STATUS_APPLICATION_STOPPED = 2U, /**< Device is in state APPLICATION_STOPPED */
+  DEVICE_STATUS_NORMAL_OPERATION =
+    3U,                        /**< Device is in state NORMAL_OPERATION, application is running */
+  DEVICE_STATUS_INVALID = 255U /**< Device status is invalid / not initialized */
 };
 
 /*
@@ -41,19 +41,19 @@ enum class DEVICE_STATUS : std::uint8_t
 struct DEPTHMAP_FLAGS
 {
   uint16_t filteredDepthMap : 1;
-  uint16_t intrusionData    : 1;
-  uint16_t dataStream       : 1;
-  uint16_t reserved         : 13;
+  uint16_t intrusionData : 1;
+  uint16_t dataStream : 1;
+  uint16_t reserved : 13;
 };
 
 struct DEPTHMAP_ELEMENT
 {
-  uint32_t       frameNumber;
-  DEVICE_STATUS  deviceStatus;
+  uint32_t frameNumber;
+  DEVICE_STATUS deviceStatus;
   DEPTHMAP_FLAGS flags;
-  uint16_t       distance;
-  uint16_t       intensity;
-  uint16_t       confidence;
+  uint16_t distance;
+  uint16_t intensity;
+  uint16_t confidence;
 };
 
 #pragma pack(pop)
@@ -65,17 +65,17 @@ struct DEPTHMAP_ELEMENT
 
 struct DEVICESTATUS_DATA_GENERALSTATUS
 {
-  uint8_t runModeActive        : 1;
-  uint8_t deviceError          : 1;
-  uint8_t applicationError     : 1;
-  uint8_t sleepMode            : 1;
-  uint8_t waitForInput         : 1;
-  uint8_t waitForCluster       : 1;
+  uint8_t runModeActive : 1;
+  uint8_t deviceError : 1;
+  uint8_t applicationError : 1;
+  uint8_t sleepMode : 1;
+  uint8_t waitForInput : 1;
+  uint8_t waitForCluster : 1;
   uint8_t contaminationWarning : 1;
-  uint8_t contaminationError   : 1;
-  uint8_t deadZoneDetection    : 1;
-  uint8_t temperatureWarning   : 1;
-  uint8_t reserved             : 6;
+  uint8_t contaminationError : 1;
+  uint8_t deadZoneDetection : 1;
+  uint8_t temperatureWarning : 1;
+  uint8_t reserved : 6;
 };
 
 struct DEVICESTATUS_DATA_ACTIVE_MONITORING_CASE
@@ -88,12 +88,12 @@ struct DEVICESTATUS_DATA_ACTIVE_MONITORING_CASE
 
 struct DEVICE_STATUS_ELEMENT
 {
-  DEVICESTATUS_DATA_GENERALSTATUS          generalStatus;
-  uint32_t                                 COPSaftyRelated;    // Cut-Off-Path (safety related)
-  uint32_t                                 COPNonSaftyRelated; // Cut-Off-Path non safety related
-  uint32_t                                 COPResetRequired;   // Cut-Off-Path Reset Required
+  DEVICESTATUS_DATA_GENERALSTATUS generalStatus;
+  uint32_t COPSaftyRelated;    // Cut-Off-Path (safety related)
+  uint32_t COPNonSaftyRelated; // Cut-Off-Path non safety related
+  uint32_t COPResetRequired;   // Cut-Off-Path Reset Required
   DEVICESTATUS_DATA_ACTIVE_MONITORING_CASE activeMonitoringCase;
-  uint8_t                                  contaminationLevel;
+  uint8_t contaminationLevel;
 };
 
 #pragma pack(pop)
@@ -105,12 +105,12 @@ struct DEVICE_STATUS_ELEMENT
 
 struct ROI_DATA_RESULT
 {
-  uint8_t taskResult    : 1;
-  uint8_t resultSafe    : 1;
-  uint8_t resultValid   : 1;
+  uint8_t taskResult : 1;
+  uint8_t resultSafe : 1;
+  uint8_t resultValid : 1;
   uint8_t distanceValid : 1;
-  uint8_t distanceSafe  : 1;
-  uint8_t reserved      : 3;
+  uint8_t distanceSafe : 1;
+  uint8_t reserved : 3;
 };
 
 /*! Quality classes for measurement accuracy (JAMA 3DTOF-BU_22_SYS-1316) */
@@ -124,22 +124,23 @@ enum ROI_QUALITY_CLASS
 
 };
 
-/*! \brief Union for BitSet structure and alternative generic access : ROI distance measurement - safety related information (JAMA 3DTOF-BU_22_SYS-995) */
+/*! \brief Union for BitSet structure and alternative generic access : ROI distance measurement -
+ * safety related information (JAMA 3DTOF-BU_22_SYS-995) */
 union ROI_DATA_SAFETY_DATA
 {
   struct
   {
-    uint8_t invalidDueToInvalidPixels              : 1;
-    uint8_t invalidDueToVariance                   : 1;
-    uint8_t invalidDueToOverexposure               : 1;
-    uint8_t invalidDueToUnderexposure              : 1;
-    uint8_t invalidDueToTemporalVariance           : 1;
-    uint8_t invalidDueToOutsideOfMeasurementRange  : 1;
+    uint8_t invalidDueToInvalidPixels : 1;
+    uint8_t invalidDueToVariance : 1;
+    uint8_t invalidDueToOverexposure : 1;
+    uint8_t invalidDueToUnderexposure : 1;
+    uint8_t invalidDueToTemporalVariance : 1;
+    uint8_t invalidDueToOutsideOfMeasurementRange : 1;
     uint8_t invalidDueToRetroReflectorInterference : 1;
-    uint8_t contaminationError                     : 1;
-    uint8_t qualityClass                           : 2;
-    uint8_t slotActive                             : 1;
-    uint8_t reserved                               : 5;
+    uint8_t contaminationError : 1;
+    uint8_t qualityClass : 2;
+    uint8_t slotActive : 1;
+    uint8_t reserved : 5;
 
   } tMembers; /*!< Member Container */
 
@@ -148,10 +149,10 @@ union ROI_DATA_SAFETY_DATA
 
 struct ROI_ELEMENT
 {
-  uint8_t              id;
-  ROI_DATA_RESULT      result;
+  uint8_t id;
+  ROI_DATA_RESULT result;
   ROI_DATA_SAFETY_DATA safetyRelatedData;
-  uint16_t             distanceValue;
+  uint16_t distanceValue;
 };
 
 enum class DataHandlerError
@@ -235,23 +236,23 @@ struct LOCALIOS_OSSDS_STATE
   uint8_t stateOSSD1B : 1;
   uint8_t stateOSSD2A : 1;
   uint8_t stateOSSD2B : 1;
-  uint8_t reserved    : 4;
+  uint8_t reserved : 4;
 };
 
 struct LOCALIOS_ELEMENT
 {
-  LOCALIOS_UNIVERSALIO_CONFIGURED   universalIOConfigured;
-  LOCALIOS_UNIVERSALIO_DIRECTION    universalIODirection;
-  LOCALIOS_UNIVERSALIO_INPUTVALUES  universalIOInputValue;
+  LOCALIOS_UNIVERSALIO_CONFIGURED universalIOConfigured;
+  LOCALIOS_UNIVERSALIO_DIRECTION universalIODirection;
+  LOCALIOS_UNIVERSALIO_INPUTVALUES universalIOInputValue;
   LOCALIOS_UNIVERSALIO_OUTPUTVALUES universalIOOutputValue;
-  LOCALIOS_OSSDS_STATE              ossdsState;
-  uint8_t                           ossdsDynCount;     // reserved
-  uint8_t                           ossdsCRC;          // reserved
-  uint8_t                           ossdsIOStatus;     // reserved
-  uint16_t                          dynamicSpeedA;     // reserved
-  uint16_t                          dynamicSpeedB;     // reserved
-  uint16_t                          DynamicValidFlags; // reserved
-  uint16_t                          flags;             // reserved
+  LOCALIOS_OSSDS_STATE ossdsState;
+  uint8_t ossdsDynCount;      // reserved
+  uint8_t ossdsCRC;           // reserved
+  uint8_t ossdsIOStatus;      // reserved
+  uint16_t dynamicSpeedA;     // reserved
+  uint16_t dynamicSpeedB;     // reserved
+  uint16_t DynamicValidFlags; // reserved
+  uint16_t flags;             // reserved
 };
 
 #pragma pack(pop)
@@ -286,16 +287,16 @@ struct LOGICSIGNALS_INSTANCESTATE
 {
   uint8_t instanceOSSD1 : 1;
   uint8_t instanceOSSD2 : 1;
-  uint8_t reserved      : 6;
+  uint8_t reserved : 6;
 };
 
 struct LOGICSIGNALS_ELEMENT
 {
-  uint8_t  signalType;
-  uint8_t  instance;
-  uint16_t configured      : 1;
+  uint8_t signalType;
+  uint8_t instance;
+  uint16_t configured : 1;
   uint16_t signalDirection : 1;
-  uint16_t reserved        : 14;
+  uint16_t reserved : 14;
   uint16_t value;
 };
 
@@ -417,9 +418,10 @@ public:
   /// \return Returns the structure with the active segments
   DataSetsActive getDataSetsActive();
 
-  /// Clears the data from the last Blob in case the corresponding segment is not available any more.
-  /// In case the data segment "DepthMap" is not available, use the given changed counter as framenumber.
-  /// The changed counter is incremented each Blob and is identical to the frame number.
+  /// Clears the data from the last Blob in case the corresponding segment is not available any
+  /// more. In case the data segment "DepthMap" is not available, use the given changed counter as
+  /// framenumber. The changed counter is incremented each Blob and is identical to the frame
+  /// number.
   ///
   /// \param[in] changedCounter counter which shall be used as frame number
   void clearData(uint32_t changedCounter);
