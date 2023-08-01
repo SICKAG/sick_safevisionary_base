@@ -1,5 +1,5 @@
 variables:
-  CI_SCRIPTS_BRANCH: dev
+  CI_SCRIPTS_BRANCH: master
 
 fla_v2:
   trigger:
