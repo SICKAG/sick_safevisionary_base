@@ -1,0 +1,18 @@
+name: Iron
+
+on: [push, pull_request]
+
+
+jobs:
+  industrial_ci:
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - {ROS_DISTRO: iron, ROS_REPO: testing}
+          - {ROS_DISTRO: iron, ROS_REPO: main}
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v1
+      - uses: 'ros-industrial/industrial_ci@master'
+        env: ${{matrix.env}}
