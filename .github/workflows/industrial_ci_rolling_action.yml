@@ -19,7 +19,6 @@ jobs:
       fail-fast: false
       matrix:
         env:
-          - {ROS_DISTRO: rolling, ROS_REPO: testing}
           - {ROS_DISTRO: rolling, ROS_REPO: main}
     runs-on: ubuntu-22.04
     steps:
