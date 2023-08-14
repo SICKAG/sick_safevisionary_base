@@ -21,4 +21,4 @@ Make also sure to configure *send when* to *Any Measurement* since the sensor.
 
 To finalize the setup, the configuration has to be transferred to the sensor in the `Transfer` tab of the Safety Designer.
 
-![Transfer configuration in the safety designer](../images/transfer_config.png.png)
+![Transfer configuration in the safety designer](../images/transfer_config.png)
