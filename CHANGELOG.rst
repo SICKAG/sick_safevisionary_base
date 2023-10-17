@@ -2,8 +2,8 @@
 Changelog for package sick_safevisionary_base
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2023-10-17)
+------------------
 * Update top-level readme with build instructions (`#2 <https://github.com/SICKAG/sick_safevisionary_base/issues/2>`_)
   * Update top-level readme with build instructions
   * Mention the *send when* option in the safety designer
