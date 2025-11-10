@@ -2,10 +2,10 @@
 <package format="2">
   <name>sick_safevisionary_base</name>
   <version>1.0.1</version>
-  <description>The package provides the basic hardware interface to the SICK Safevisionary sensor</description>
+  <description>The package provides the basic hardware interface to the SICK safeVisionary sensor</description>
 
+  <maintainer email="eichmann@fzi.de">Christian Eichmann</maintainer>
   <maintainer email="grosse@fzi.de">Marvin Grosse Besselmann</maintainer>
-  <maintainer email="scherzin@fzi.de">Stefan Scherzinger</maintainer>
   <maintainer email="jochen.lienhart@sick.de">Jochen Lienhart</maintainer>
 
   <license>Apache-2.0</license>

@@ -4,14 +4,14 @@
 ![build badge](https://github.com/SICKAG/sick_safevisionary_base/actions/workflows/industrial_ci_iron_action.yml/badge.svg)
 ![build badge](https://github.com/SICKAG/sick_safevisionary_base/actions/workflows/industrial_ci_rolling_action.yml/badge.svg)
 
-# Sick Safevisionary Base
+# SICK safeVisionary Base
 This is the C++ driver library for SICK safeVisionary 3D cameras.
 It implements the core functionality of the sensor communication for usage in different frameworks.
 
 ## Sensor configuration
 Each camera needs an initial configuration once to get started. Here's a [brief explanation](./resources/doc/safety_designer.md) how to do that.
 
-## ROS1/2 usage
+## ROS 1/2 usage
 There are two lean drivers that cover all supported ROS versions.
 You'll find them here:
 - [sick_safevisionary_ros1](https://github.com/SICKAG/sick_safevisionary_ros1)
