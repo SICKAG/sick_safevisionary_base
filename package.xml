@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<package format="2">
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd"
+            schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>sick_safevisionary_base</name>
   <version>1.0.1</version>
   <description>The package provides the basic hardware interface to the SICK safeVisionary sensor</description>
@@ -8,7 +10,9 @@
   <maintainer email="grosse@fzi.de">Marvin Grosse Besselmann</maintainer>
   <maintainer email="jochen.lienhart@sick.de">Jochen Lienhart</maintainer>
 
-  <license>Apache-2.0</license>
+  <license file="LICENSE">Apache-2.0</license>
+  <license file="third-party-licenses/license-texts/zlib.LICENSE">Zlib</license>
+  <license file="third-party-licenses/license-texts/libtomcrypt.LICENSE">Unlicense</license>
 
   <buildtool_depend>cmake</buildtool_depend>
 

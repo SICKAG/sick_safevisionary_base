@@ -6,6 +6,7 @@
  * The library is free for all purposes without any express
  * guarantee it works.
  */
+/* SPDX-License-Identifier: Unlicense */
 #include <cstdint>
 #ifdef __cplusplus
 extern "C"
