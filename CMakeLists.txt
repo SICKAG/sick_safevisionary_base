@@ -37,6 +37,16 @@ endif()
 
 enable_testing()
 
+if(BUILD_TESTING)
+  add_executable(SafeVisionaryDataCompatibilityTest
+    test/SafeVisionaryDataCompatibilityTest.cpp
+  )
+  target_link_libraries(SafeVisionaryDataCompatibilityTest
+    PRIVATE ${PROJECT_NAME}
+  )
+  add_test(NAME SafeVisionaryDataCompatibilityTest COMMAND SafeVisionaryDataCompatibilityTest)
+endif()
+
 #############
 ## Install ##
 #############

@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -32,7 +33,7 @@
 #define LOCALIOS_SEGMENT 4
 #define FIELDINFORMATION_SEGMENT 5
 #define LOGICSIGNALS_SEGMENT 6
-#define IMU_SEGMENT 7
+#define IMU_SEGMENT 8
 
 namespace visionary {
 /** Enumeration which describes the various states of the device */
@@ -85,10 +86,11 @@ struct DEVICESTATUS_DATA_GENERALSTATUS
   uint8_t waitForInput : 1;
   uint8_t waitForCluster : 1;
   uint8_t contaminationWarning : 1;
-  uint8_t contaminationError : 1;
-  uint8_t deadZoneDetection : 1;
-  uint8_t temperatureWarning : 1;
-  uint8_t reserved : 6;
+    uint8_t contaminationError : 1;
+    uint8_t deadZoneDetection : 1; // DeviceStatus v2: dead clusters in depth-map zone error
+    uint8_t temperatureWarning : 1;
+    uint8_t deadZoneWarning : 1;
+    uint8_t reserved : 5;
 };
 
 struct DEVICESTATUS_DATA_ACTIVE_MONITORING_CASE
@@ -107,6 +109,7 @@ struct DEVICE_STATUS_ELEMENT
   uint32_t COPResetRequired;   // Cut-Off-Path Reset Required
   DEVICESTATUS_DATA_ACTIVE_MONITORING_CASE activeMonitoringCase;
   uint8_t contaminationLevel;
+  uint32_t configurationChecksum; // Available in DeviceStatus v2, zero for v1
 };
 
 #pragma pack(pop)
@@ -323,7 +326,7 @@ struct LOGICSIGNALS_DATA
 #pragma pack(pop)
 
 /*
- * Segment 7  IMU
+ * Segment 8  IMU
  */
 #pragma pack(push, 1)
 
@@ -390,6 +393,10 @@ public:
   /// \return received ROI data
   const ROI_DATA& getRoiData() const;
 
+  /// Gets all received ROI entries. Unlike getRoiData(), this is not limited to the five entries
+  /// used by the legacy stream layout.
+  const std::vector<ROI_ELEMENT>& getRoiDataElements() const;
+
   /// Gets Local I/Os
   /// \return received Local I/Os
   LOCALIOS_ELEMENT getLocalIOData() const;
@@ -402,6 +409,12 @@ public:
   /// \return received Logic Signal data
   const LOGICSIGNALS_DATA& getLogicSignalsData() const;
 
+  /// Gets the packed safety-state bitmap (one bit per depth-map pixel).
+  const std::vector<uint8_t>& getSafetyStateMap() const;
+
+  /// Returns true if the current DeviceStatus segment contained the v2 configuration checksum.
+  bool hasConfigurationChecksum() const;
+
   /// Gets IMU data
   /// \return received IMU data
   const IMU_ELEMENT getIMUData() const;
@@ -413,6 +426,9 @@ public:
   /// Gets the information whether the intruded pixel state in the pixel state map is valid.
   /// \return returns true in case the intruded pixel state is valid, otherwise returns false
   bool isIntrudedPixelStateValid() const;
+
+  /// Gets whether the ghost filter was active for the received depth map.
+  bool isGhostFilterActive() const;
 
   /// Calculate and return the point cloud in the camera perspective. Units are in meters.
   /// \param[out] vector containing the calculated point cloud
@@ -504,6 +520,11 @@ private:
   /// Contains the ROI data
   ROI_DATA m_roiData;
 
+  /// Contains all ROI entries. The legacy m_roiData view contains the first five entries.
+  std::vector<ROI_ELEMENT> m_roiDataElements;
+
+  size_t m_expectedRoiCount;
+
   // Contains the Device status data
   DEVICE_STATUS_ELEMENT m_deviceStatusData;
 
@@ -516,11 +537,15 @@ private:
   // Contains the Logic Signal data
   LOGICSIGNALS_DATA m_logicSignalsData;
 
+  std::vector<uint8_t> m_safetyStateMap;
+
   // Contains the IMU data
   IMU_ELEMENT m_IMUData;
 
   /// Contains the received flags
   uint16_t m_flags;
+
+  bool m_hasConfigurationChecksum;
 
   /// Stores the last error which occurred while parsing the Blob data segments
   DataHandlerError m_lastDataHandlerError;

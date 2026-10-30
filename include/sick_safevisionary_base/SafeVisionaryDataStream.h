@@ -80,7 +80,8 @@ public:
   ///               documentation.
   bool openUdpConnection(std::uint16_t port);
 
-  /// Connects to the sensor data stream using the given TCP port and given IPAddress
+  /// Connects to the sensor data stream using the given TCP port and given IPAddress.
+  /// The port is expected in network byte order, matching openUdpConnection().
   bool openTcpConnection(std::uint16_t port, std::string deviceIpAddress);
 
   /// Closes the connection. It is allowed to call close of a connection

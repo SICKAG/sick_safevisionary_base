@@ -61,9 +61,9 @@ public:
   int read(std::vector<std::uint8_t>& buffer, std::size_t nBytesToReceive) override;
 
 private:
-  SOCKET m_socket;
-  SOCKET m_socketServer;
-  SOCKET m_socketTcp;
+  SOCKET m_socket       = INVALID_SOCKET;
+  SOCKET m_socketServer = INVALID_SOCKET;
+  SOCKET m_socketTcp    = INVALID_SOCKET;
 };
 
 } // namespace visionary

@@ -102,8 +102,9 @@ int UdpSocket::bindPort(std::uint16_t port)
 
   if (iResult >= 0)
   {
-    // set socket receive buffer size to 512kB
-    int bufferSize    = 512 * 1024;
+    // Newer safeVisionary streams use UDP datagrams around 64 KiB. Keep enough kernel-side
+    // buffering for several complete multi-datagram Blobs during short scheduling delays.
+    int bufferSize    = 4 * 1024 * 1024;
     int bufferSizeLen = sizeof(bufferSize);
     iResult = setsockopt(m_socket, SOL_SOCKET, SO_RCVBUF, (char*)&bufferSize, bufferSizeLen);
 

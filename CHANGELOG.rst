@@ -2,6 +2,12 @@
 Changelog for package sick_safevisionary_base
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.2
+----------
+* Keep Device Status segment versions 1 and 2 supported in the parser.
+* Treat unsupported segment versions as blob parse errors and continue with the next read.
+* Contributors: Thomas Trapp, Christian Eichmann
+
 1.0.1 (2023-10-17)
 ------------------
 * Update top-level readme with build instructions (`#2 <https://github.com/SICKAG/sick_safevisionary_base/issues/2>`_)

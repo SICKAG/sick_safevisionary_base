@@ -58,6 +58,7 @@ struct DataSetsActive
   bool hasDataSetLocalIOs;
   bool hasDataSetFieldInfo;
   bool hasDataSetLogicSignals;
+  bool hasDataSetSafety;
   bool hasDataSetIMU;
 };
 
