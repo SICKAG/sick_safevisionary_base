@@ -83,15 +83,62 @@ static const uint32_t CRC_au32CRCTable[256] = {
  *
  * @return the CRC-32 value of the block
  */
+namespace {
+
+//! The table of CRC_au32CRCTable extended to eight tables for slicing-by-8: table k gives the CRC contribution of a
+//! byte that is followed by k zero bytes. Built once, on first use.
+struct Crc32SliceTables
+{
+  uint32_t t[8][256];
+  Crc32SliceTables()
+  {
+    for (uint32_t i = 0u; i < 256u; i++)
+    {
+      t[0][i] = CRC_au32CRCTable[i];
+    }
+    for (uint32_t i = 0u; i < 256u; i++)
+    {
+      for (uint32_t k = 1u; k < 8u; k++)
+      {
+        t[k][i] = (t[k - 1u][i] >> 8u) ^ t[0][t[k - 1u][i] & 0xFFu];
+      }
+    }
+  }
+};
+
+const Crc32SliceTables& crc32SliceTables()
+{
+  static const Crc32SliceTables tables;
+  return tables;
+}
+
+} // namespace
+
 uint32_t CRC_calcCrc32Block(const void* const pvData, uint32_t u32Length, uint32_t u32InitVal)
 {
   const uint8_t* pu8Data = (const uint8_t*)pvData;
-  uint32_t u32CrcVal     = u32InitVal;
-  uint32_t u32Idx;
+  const uint32_t(&t)[8][256] = crc32SliceTables().t;
+  uint32_t u32CrcVal = u32InitVal;
 
-  for (u32Idx = 0u; u32Idx < u32Length; u32Idx++)
+  // Slicing-by-8: eight bytes per step instead of one. The bytes are combined explicitly, so the result is the same
+  // on any byte order and alignment as the byte-at-a-time loop below, which handles the remaining bytes.
+  while (u32Length >= 8u)
   {
-    u32CrcVal = (u32CrcVal >> 8u) ^ CRC_au32CRCTable[(u32CrcVal & 0xFFu) ^ pu8Data[u32Idx]];
+    const uint32_t u32Lo = u32CrcVal ^ ((uint32_t)pu8Data[0] | ((uint32_t)pu8Data[1] << 8u) |
+                                        ((uint32_t)pu8Data[2] << 16u) | ((uint32_t)pu8Data[3] << 24u));
+    const uint32_t u32Hi = (uint32_t)pu8Data[4] | ((uint32_t)pu8Data[5] << 8u) |
+                           ((uint32_t)pu8Data[6] << 16u) | ((uint32_t)pu8Data[7] << 24u);
+    u32CrcVal = t[7][u32Lo & 0xFFu] ^ t[6][(u32Lo >> 8u) & 0xFFu] ^ t[5][(u32Lo >> 16u) & 0xFFu] ^
+                t[4][u32Lo >> 24u] ^ t[3][u32Hi & 0xFFu] ^ t[2][(u32Hi >> 8u) & 0xFFu] ^
+                t[1][(u32Hi >> 16u) & 0xFFu] ^ t[0][u32Hi >> 24u];
+    pu8Data += 8u;
+    u32Length -= 8u;
+  }
+  while (u32Length > 0u)
+  {
+    u32CrcVal = (u32CrcVal >> 8u) ^ CRC_au32CRCTable[(u32CrcVal & 0xFFu) ^ *pu8Data];
+    pu8Data++;
+    u32Length--;
   }
 
   return u32CrcVal;
